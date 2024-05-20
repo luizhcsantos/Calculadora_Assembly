@@ -52,13 +52,16 @@ type
     RadioButton2: TRadioButton; 
     procedure FormCreate(Sender: TObject);
     procedure ButtonClick(Sender: TObject);
-    procedure ButtonEqualsClick(Sender: TObject);
+    procedure ButtonEqualsClick(Sender: TObject);    
+    procedure ButtonClearClick(Sender: TObject);
 
 
   private
     { Private declarations }
     ExpressaoNP: string;
     function AvaliarNP(expressao: string): Double;
+    function transformaNP(infixa: string): string;
+    function AvaliarNP(np: string): Double;
 
   public
     { Public declarations }

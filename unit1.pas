@@ -38,7 +38,7 @@ type
     Button29: TButton;
     Button3: TButton;
     Button30: TButton;
-    Button31: TButton;
+    Button31: TButton; // Botão 'C' para limpar
     Button32: TButton;
     Button4: TButton;
     Button5: TButton;
@@ -60,8 +60,7 @@ type
     { Private declarations }
     ExpressaoNP: string;
     function AvaliarNP(expressao: string): Double;
-    function transformaNP(infixa: string): string;
-    function AvaliarNP(np: string): Double;
+    function InfixaParaNP(infixa: string): string;
 
   public
     { Public declarations }
@@ -79,6 +78,57 @@ type TPilha = record
       dado: array of Double;
       topo: Integer;
       end;
+
+
+procedure TForm1.FormCreate(Sender: TObject);
+var
+  i: Integer;
+  btn: TButton;
+begin
+  Edit1.Text := ''; // Inicializa o Edit1 com uma string vazia
+end;
+
+procedure TForm1.ButtonClick(Sender: TObject);
+begin
+  // Concatena o texto do botão ao Edit1
+  Edit1.Text := Edit1.Text + (Sender as TButton).Caption;
+end;
+
+
+procedure TForm1.ButtonEqualsClick(Sender: TObject);
+var
+  expressaoInfixa, expressaoNP: string;
+  resultado: Double;
+begin
+    try
+      // Obtém a expressão infix do Edit1
+      expressaIfixa := Edit1.Text;
+
+      // Converte a expressão infixa para NP
+      expressaoNP := InfixaParaNP(expressaoInfixa);
+
+      // Calcula o resultado da expressão NP
+      resultado := AvaliarNP(expressaoNP);
+
+      // Exibe o resultado no Edit1
+      Edit1.Text := FloatToStr(resultado);
+    except
+      on E: Exception do
+         Edit1.Text := 'Error: ' + E.Message;
+    end;
+end;
+
+procedure TForm1.ButtonClearClick(Sender: TObject);
+begin
+  // Limpa o conteúdo do Edit1
+  Edit1.Text := '';
+end;
+
+function TForm1.InfixaParaNP(infix: string): string;
+begin
+
+end;
+
 
 // Operações da Pilha
 //*******************
@@ -175,41 +225,11 @@ var
       Result := Pop(pilha);
 end;
 
-procedure TForm1.ButtonClick(Sender: TObject);
-begin
-  // Adiciona o texto do botão à expressão
-  ExpressaoNP := ExpressaoNP + (Sender as TButton).Caption + ' ';
-  Edit1.Text := ExpressaoNP;
-end;
 
-procedure TForm1.ButtonEqualsClick(Sender: TObject);
-var
-  resultado: Double;
-begin
-    try
-      resultado := AValiarNP(ExpressaoNP);
-      Edit1.Text := FloatToStr(resultado);
-      ExpressaoNP := ''; // Reseta a expressão após calcular
-    except
-      on E: Exception do
-         Edit1.Text := 'Error: ' + E.Message;
-    end;
-end;
 
-procedure TForm1.FormCreate(Sender: TObject);
-var
-  i: Integer;
-  btn: TButton;
-begin
-  // Associa o evento ButtonClick a todos os botões de numeros e operadores
-  for i := 1 to 32 do
-  begin
-    btn := TButton(FindComponent('Button' + IntToSTr(i)));
-    if Assigned(btn) then
-       btn.OnClick := @ButtonClick;
-  end;
-  Button17.OnClick := @ButtonEqualsClick;
-end;
+
+
+
 
 
 end.
