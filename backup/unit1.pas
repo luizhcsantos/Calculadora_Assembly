@@ -78,7 +78,6 @@ type
   private
     { Private declarations }
     function AvaliarNP(expressao: string): Double;
-    procedure AdicionaTextoMemo(const Texto: string);
     procedure IniciarPilhaChar(var pilha: TPilhaChar);
     procedure PushChar(var pilha: TPilhaChar; valor: Char);
     function PopChar(var pilha: TPilhaChar): Char;
@@ -147,19 +146,22 @@ end;
 
 function TForm1.InfixToPostfix(expression: string): string;
 var
-  P1: TPilhaChar;      // pilha para armazenas os operadores
+  P1: TPilhaChar;      // pilha para armazenar os operadores
   L1: TStringList;     // lista para armazenar os valores da operação
   i: integer;
   ch: char;
   tempNum: string;
+  tempStr: string;
 begin
   IniciarPilhaChar(P1);
   L1 := TStringList.Create;
   tempNum := '';
   try
-    for i := 1 to Length(expression) do
+    i := 1;
+    while i <= Length(expression) do
     begin
       ch := expression[i];
+
       if ch in ['0'..'9', '.'] then
       begin
         tempNum := tempNum + ch; // Acumula o número
@@ -168,38 +170,63 @@ begin
       begin
         if tempNum <> '' then
         begin
-          L1.Add(tempNum); // Adiciona o numero acumulado à lista
+          L1.Add(tempNum); // Adiciona o número acumulado à lista
           tempNum := '';
         end;
-      case ch of
-        'a'..'z', 'A'..'Z':
-          L1.Add(ch);
-        '(':
-          PushChar(P1, ch);
-        ')':
+
+        if (ch in ['a'..'z', 'A'..'Z']) then
+        begin
+          tempStr := '';
+          while (i <= Length(expression)) and (expression[i] in ['a'..'z', 'A'..'Z']) do
           begin
-            while (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] <> '(') do
-            begin
-              L1.Add(PopChar(P1));
-            end;
-            if (not PilhaCharVazia(P1)) then
-              PopChar(P1); // Remover '(' da pilha
+            tempStr := tempStr + expression[i];
+            Inc(i);
           end;
-        '+', '-', '*', '/', '^', '~':
+          Dec(i); // Compensar o incremento extra
+          if tempStr = 'sqrt' then
           begin
-            while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(ch)) do
-            begin
-              L1.Add(PopChar(P1));
-            end;
-            PushChar(P1, ch);
+            L1.Add(tempStr);
+          end
+          else
+          begin
+            raise Exception.Create('Operador inválido: ' + tempStr);
+          end;
+        end
+        else
+        begin
+          case ch of
+            '(':
+              PushChar(P1, ch);
+            ')':
+              begin
+                while (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] <> '(') do
+                begin
+                  L1.Add(PopChar(P1));
+                end;
+                if (not PilhaCharVazia(P1)) then
+                  PopChar(P1); // Remover '(' da pilha
+              end;
+            '+', '-', '*', '/', '^', '~':
+              begin
+                while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(ch)) do
+                begin
+                  L1.Add(PopChar(P1));
+                end;
+                PushChar(P1, ch);
+              end;
+          else
+            raise Exception.Create('Caractere inválido: ' + ch);
           end;
         end;
       end;
+      Inc(i);
     end;
-    if tempNumber <> '' then
+
+    if tempNum <> '' then
     begin
-      L1.Add(tempNumber); // Adiciona o último número acumulado, se houver
+      L1.Add(tempNum); // Adiciona o último número acumulado, se houver
     end;
+
     while (not PilhaCharVazia(P1)) do
     begin
       L1.Add(PopChar(P1));
@@ -211,10 +238,6 @@ begin
   end;
 end;
 
-procedure TForm1.AdicionaTextoMemo(const Texto: string);
-begin
-
-end;
 
 
 procedure TForm1.ButtonClick(Sender: TObject);
@@ -225,6 +248,7 @@ var
 begin
   // Obtenha o dígito do botão clicado
   numeroDigitado := (Sender as TButton).Caption;
+
 
   // Verifique se o texto atual do Edit1 é vazio
   if Edit1.Text = '' then
@@ -262,7 +286,7 @@ var
   pilha: TPilhaDouble;
   tokens: TStringArray;
   token: string;
-  op1, op2: Double;
+  op1, op2, resultado: Double;
   foundNil: Boolean;
   base: Integer;
 begin
@@ -270,7 +294,7 @@ begin
   tokens := SplitString(expressao, ' ');
 
   foundNil := False;
-
+  base := 10;
   for token in tokens do
   begin
     if token = '' then
@@ -284,21 +308,26 @@ begin
     end
     else if ehOperador(token) then
     begin
-      if (token <> '~') or (token <> 's') then // Operações que requerem dois operandos
+      if (token <> 'sqrt') then
       begin
-      // se o token é um operador diferente de '~', dois operandos são retirados da pilha
-      // e a operação é realizada em assembly
-       op2 := PopDouble(pilha);
-       op1 := PopDouble(pilha);
-       end
-       else // Operação que requer apenas um operando
+        op1 := PopDouble(pilha);
+        asm
+         fld op1
+         fsqrt
+         fstp op1
+        end;
+      end
+       else if token = '~' then
        begin
-       // se o token é '~', apenas um operando é retirado da pilha
+       // se o token é '~' , apenas um operando é retirado da pilha
        // e a operação de negativo é realizada em assembly
          op1 := PopDouble(pilha);
-         base := 10;
+         asm
+          fld op1
+          fchs
+          fstp op1
+        end
        end;
-
       if token = '+' then
       asm
         fld op1
@@ -323,14 +352,7 @@ begin
         fdiv op2
         fstp op1
       end
-      else if token = '~' then
-      asm
-        fld op1
-        fchs
-        fstp op1
-      end
-
-      else if token = 's' then
+      else if token = 'log' then
       asm
        finit //inicializa a pilha
        fld1 //[ 1.0 ]
@@ -450,7 +472,7 @@ end;
 
 function TForm1.ehOperador(s: string): Boolean;
 begin
-  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~');
+  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = 'sqrt');
 end;
 
 function TForm1.ehLetraOuDigito(c: Char): Boolean;

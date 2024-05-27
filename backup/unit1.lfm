@@ -301,6 +301,7 @@ object Form1: TForm1
     Width = 94
     Caption = 'Backspace'
     TabOrder = 35
+    OnClick = Button32Click
   end
   object Button33: TButton
     Left = 336
