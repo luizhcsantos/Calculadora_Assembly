@@ -117,8 +117,8 @@ end;
 
 function TForm1.InfixToPostfix(expression: string): string;
 var
-  P1: TPilhaChar;
-  L1: TStringList;
+  P1: TPilhaChar;      // pilha para armazenas os operadores
+  L1: TStringList;     // lista para armazenar os valores da operação
   i: integer;
   ch: char;
 begin

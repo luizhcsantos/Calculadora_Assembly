@@ -16,7 +16,12 @@ uses
 
 type
 
-  TPilha = record
+  TPilhaChar = record
+    dado: array of Char;
+    topo: Integer;
+  end;
+
+  TPilhaDouble = record
     dado: array of Double;
     topo: Integer;
   end;
@@ -73,10 +78,16 @@ type
     { Private declarations }
     function AvaliarNP(expressao: string): Double;
     procedure AdicionaTextoMemo(const Texto: string);
-    procedure IniciarPilha(var pilha: TPilha);
-    procedure Push(var pilha: TPilha; valor: Double);
-    function Pop(var pilha: TPilha): Double;
-    function PilhaVazia(const stack: TPilha): Boolean;
+    procedure IniciarPilhaChar(var pilha: TPilhaChar);
+    procedure PushChar(var pilha: TPilhaChar; valor: Char);
+    function PopChar(var pilha: TPilhaChar): Char;
+    function PilhaCharVazia(const pilha: TPilhaChar): Boolean;
+
+    procedure IniciarPilhaDouble(var pilha: TPilhaDouble);
+    procedure PushDouble(var pilha: TPilhaDouble; valor: Double);
+    function PopDouble(var pilha: TPilhaDouble): Double;
+    function PilhaDoubleVazia(const pilha: TPilhaDouble): Boolean;
+
     function InfixToPostfix(expression: string): string;
 
   public
@@ -106,46 +117,50 @@ end;
 
 function TForm1.InfixToPostfix(expression: string): string;
 var
-  pilha: TPilha;
-  postfix: string;
+  P1: TPilhaChar;      // pilha para armazenas os operadores
+  L1: TStringList;     // lista para armazenar os valores da operação
   i: integer;
   ch: char;
 begin
-  IniciarPilha(pilha);
-  postfix := '';
-  for i := 1 to Length(expression) do
-  begin
-    ch := expression[i];
-    case ch of
-      'a'..'z', 'A'..'Z', '0'..'9':
-        postfix := postfix + ch + ' ';
-      '(':
-        Push(pilha, Ord(ch));
-      ')':
-        begin
-          while (not PilhaVazia(pilha)) and (Char(pilha.dado[pilha.topo]) <> '(') do
+  IniciarPilhaChar(P1);
+  L1 := TStringList.Create;
+  try
+    for i := 1 to Length(expression) do
+    begin
+      ch := expression[i];
+      case ch of
+        'a'..'z', 'A'..'Z', '0'..'9':
+          L1.Add(ch);
+        '(':
+          PushChar(P1, ch);
+        ')':
           begin
-            postfix := postfix + Char(Pop(pilha));
+            while (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] <> '(') do
+            begin
+              L1.Add(PopChar(P1));
+            end;
+            if (not PilhaCharVazia(P1)) then
+              PopChar(P1); // Remover '(' da pilha
           end;
-          if (not PilhaVazia(pilha)) then
-            Pop(pilha); // Remover '(' da pilha
-        end;
-      '+', '-', '*', '/', '^':
-        begin
-          while (not PilhaVazia(pilha)) and (Precedence(Char(pilha.dado[pilha.topo])) >= Precedence(ch)) do
+        '+', '-', '*', '/', '^':
           begin
-            postfix := postfix + Char(Pop(pilha));
+            while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(ch)) do
+            begin
+              L1.Add(PopChar(P1));
+            end;
+            PushChar(P1, ch);
           end;
-          Push(pilha, Ord(ch));
-        end;
+      end;
     end;
-  end;
-  while (not PilhaVazia(pilha)) do
-  begin
-    postfix := postfix + Char(Pop(pilha));
-  end;
+    while (not PilhaCharVazia(P1)) do
+    begin
+      L1.Add(PopChar(P1));
+    end;
 
-  Result := postfix;
+    Result := L1.Text.Replace(sLineBreak, ' ');
+  finally
+    L1.Free;
+  end;
 end;
 
 procedure TForm1.AdicionaTextoMemo(const Texto: string);
@@ -160,7 +175,7 @@ var
 begin
   for i := 1 to 34 do
   begin
-    btn := TButton(FindComponent('Button' + IntToSTr(i)));
+    btn := TButton(FindComponent('Button' + IntToStr(i)));
     if Assigned(btn) then
        btn.OnClick := @ButtonClick;
   end;
@@ -204,25 +219,21 @@ begin
   Edit1.Text := '';
 end;
 
-// Operações da Pilha
-//*******************
-// Inicializar a pilha
-procedure TForm1.IniciarPilha(var pilha: TPilha);
+// Operações da Pilha de Char
+procedure TForm1.IniciarPilhaChar(var pilha: TPilhaChar);
 begin
   SetLength(pilha.dado, 0);
   pilha.topo := -1;
 end;
 
-// Colocar valores no topo da pilha
-procedure TForm1.Push(var pilha: TPilha; valor: Double);
+procedure TForm1.PushChar(var pilha: TPilhaChar; valor: Char);
 begin
   Inc(pilha.topo);
   SetLength(pilha.dado, pilha.topo + 1);
   pilha.dado[pilha.topo] := valor;
 end;
 
-// Retirar valores no topo da pilha
-function TForm1.Pop(var pilha: TPilha): Double;
+function TForm1.PopChar(var pilha: TPilhaChar): Char;
 begin
   if pilha.topo < 0 then
     raise Exception.Create('Stack underflow');
@@ -230,9 +241,36 @@ begin
   Dec(pilha.topo);
 end;
 
-function TForm1.PilhaVazia(const stack: TPilha): Boolean;
+function TForm1.PilhaCharVazia(const pilha: TPilhaChar): Boolean;
 begin
-  Result := stack.topo < 0;
+  Result := pilha.topo < 0;
+end;
+
+// Operações da Pilha de Double
+procedure TForm1.IniciarPilhaDouble(var pilha: TPilhaDouble);
+begin
+  SetLength(pilha.dado, 0);
+  pilha.topo := -1;
+end;
+
+procedure TForm1.PushDouble(var pilha: TPilhaDouble; valor: Double);
+begin
+  Inc(pilha.topo);
+  SetLength(pilha.dado, pilha.topo + 1);
+  pilha.dado[pilha.topo] := valor;
+end;
+
+function TForm1.PopDouble(var pilha: TPilhaDouble): Double;
+begin
+  if pilha.topo < 0 then
+    raise Exception.Create('Stack underflow');
+  Result := pilha.dado[pilha.topo];
+  Dec(pilha.topo);
+end;
+
+function TForm1.PilhaDoubleVazia(const pilha: TPilhaDouble): Boolean;
+begin
+  Result := pilha.topo < 0;
 end;
 
 function ehOperador(s: string): Boolean;
@@ -245,24 +283,26 @@ end;
 // e processa cada token.
 function TForm1.AvaliarNP(expressao: string): Double;
 var
-  pilha: TPilha;
+  pilha: TPilhaDouble;
   tokens: TStringArray;
   token: string;
   op1, op2: Double;
 begin
-  IniciarPilha(pilha);
+  IniciarPilhaDouble(pilha);
   tokens := SplitString(expressao, ' ');
 
   for token in tokens do
   begin
-    if TryStrToFloat(token, op1) then
+    if TryStrToFloat(token, op1) then // se o token é um número é colocado na pilha
     begin
-      Push(pilha, op1);
+      PushDouble(pilha, op1);
     end
     else if ehOperador(token) then
     begin
-      op2 := Pop(pilha);
-      op1 := Pop(pilha);
+      // se o token é um operador, dois operandos são retirados da pilha
+      // e a operação é realizada em assembly
+      op2 := PopDouble(pilha);
+      op1 := PopDouble(pilha);
 
       if token = '+' then
       asm
@@ -289,15 +329,15 @@ begin
         fstp op1
       end;
 
-      Push(pilha, op1);
+      PushDouble(pilha, op1);
     end
     else
     begin
-      raise Exception.Create('Token inválido: ' + token);
+      raise Exception.Create('Token Invalido: ' + token.ToUpper);
     end;
   end;
 
-  Result := Pop(pilha);
+  Result := PopDouble(pilha);
 end;
 
 function ehLetraOuDigito(c: Char): Boolean;
