@@ -68,8 +68,8 @@ type
     Edit2: TEdit;
     RadioButton1: TRadioButton;
     RadioButton2: TRadioButton;
-    Memo1: TMemo;
     procedure Button11Click(Sender: TObject);
+    procedure Button32Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ButtonClick(Sender: TObject);
     procedure ButtonEqualsClick(Sender: TObject);
@@ -90,6 +90,9 @@ type
     function PilhaDoubleVazia(const pilha: TPilhaDouble): Boolean;
 
     function InfixToPostfix(expression: string): string;
+    function ehLetraOuDigito(c: Char): Boolean;
+    function Precedence(op: char): integer;
+    function ehOperador(s: string): Boolean;
 
   public
     { Public declarations }
@@ -102,72 +105,6 @@ var
 implementation
 
 {$R *.lfm}
-
-function Precedence(op: char): integer;
-begin
-  case op of
-    '~': Precedence := 6;
-    '^': Precedence := 5;
-    '*', '/': Precedence := 4;
-    '+', '-': Precedence := 3;
-    '(': Precedence := 1;
-  else
-    Precedence := 0;
-  end;
-end;
-
-function TForm1.InfixToPostfix(expression: string): string;
-var
-  P1: TPilhaChar;      // pilha para armazenas os operadores
-  L1: TStringList;     // lista para armazenar os valores da operação
-  i: integer;
-  ch: char;
-begin
-  IniciarPilhaChar(P1);
-  L1 := TStringList.Create;
-  try
-    for i := 1 to Length(expression) do
-    begin
-      ch := expression[i];
-      case ch of
-        'a'..'z', 'A'..'Z', '0'..'9':
-          L1.Add(ch);
-        '(':
-          PushChar(P1, ch);
-        ')':
-          begin
-            while (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] <> '(') do
-            begin
-              L1.Add(PopChar(P1));
-            end;
-            if (not PilhaCharVazia(P1)) then
-              PopChar(P1); // Remover '(' da pilha
-          end;
-        '+', '-', '*', '/', '^', '~':
-          begin
-            while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(ch)) do
-            begin
-              L1.Add(PopChar(P1));
-            end;
-            PushChar(P1, ch);
-          end;
-      end;
-    end;
-    while (not PilhaCharVazia(P1)) do
-    begin
-      L1.Add(PopChar(P1));
-    end;
-
-    Result := L1.Text.Replace(sLineBreak, ' ');
-  finally
-    L1.Free;
-  end;
-end;
-
-procedure TForm1.AdicionaTextoMemo(const Texto: string);
-begin
-  Memo1.Lines.Add(Texto);
-end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
@@ -189,11 +126,242 @@ begin
 
 end;
 
-procedure TForm1.ButtonClick(Sender: TObject);
+procedure TForm1.Button32Click(Sender: TObject);
 begin
-  // Concatena o texto do botão ao Edit1
-  Edit1.Text := Edit1.Text + (Sender as TButton).Caption + ' ';
+  Edit1.Text := '';
 end;
+
+function TForm1.Precedence(op: char): integer;
+begin
+  case op of
+    '~': Precedence := 6;
+    '^': Precedence := 5;
+    '*', '/': Precedence := 4;
+    '+', '-': Precedence := 3;
+    '<', '>': Precedence := 2;
+    '(': Precedence := 1;
+  else
+    Precedence := 0;
+  end;
+end;
+
+function TForm1.InfixToPostfix(expression: string): string;
+var
+  P1: TPilhaChar;      // pilha para armazenas os operadores
+  L1: TStringList;     // lista para armazenar os valores da operação
+  i: integer;
+  ch: char;
+  tempNum: string;
+begin
+  IniciarPilhaChar(P1);
+  L1 := TStringList.Create;
+  tempNum := '';
+  try
+    for i := 1 to Length(expression) do
+    begin
+      ch := expression[i];
+      if ch in ['0'..'9', '.'] then
+      begin
+        tempNum := tempNum + ch; // Acumula o número
+      end
+      else
+      begin
+        if tempNum <> '' then
+        begin
+          L1.Add(tempNum); // Adiciona o numero acumulado à lista
+          tempNum := '';
+        end;
+      case ch of
+        'a'..'z', 'A'..'Z':
+          L1.Add(ch);
+        '(':
+          PushChar(P1, ch);
+        ')':
+          begin
+            while (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] <> '(') do
+            begin
+              L1.Add(PopChar(P1));
+            end;
+            if (not PilhaCharVazia(P1)) then
+              PopChar(P1); // Remover '(' da pilha
+          end;
+        '+', '-', '*', '/', '^', '~':
+          begin
+            while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(ch)) do
+            begin
+              L1.Add(PopChar(P1));
+            end;
+            PushChar(P1, ch);
+          end;
+        end;
+      end;
+    end;
+    if tempNumber <> '' then
+    begin
+      L1.Add(tempNumber); // Adiciona o último número acumulado, se houver
+    end;
+    while (not PilhaCharVazia(P1)) do
+    begin
+      L1.Add(PopChar(P1));
+    end;
+
+    Result := L1.Text.Replace(sLineBreak, ' ');
+  finally
+    L1.Free;
+  end;
+end;
+
+procedure TForm1.AdicionaTextoMemo(const Texto: string);
+begin
+
+end;
+
+
+procedure TForm1.ButtonClick(Sender: TObject);
+var
+  textoAtual: string;
+  numeroDigitado: string;
+  tamanho: Integer;
+begin
+  // Obtenha o dígito do botão clicado
+  numeroDigitado := (Sender as TButton).Caption;
+
+  // Verifique se o texto atual do Edit1 é vazio
+  if Edit1.Text = '' then
+  begin
+    // Se o texto estiver vazio, apenas adicione o dígito ao Edit1
+    Edit1.Text := numeroDigitado;
+    Exit;
+  end;
+
+  // Se chegamos aqui, significa que já há algum texto no Edit1
+  // Vamos verificar se o último caractere é um operador
+  textoAtual := TrimRight(Edit1.Text);
+  tamanho := Length(textoAtual);
+  if (ehOperador(numeroDigitado)) then
+  begin
+    numeroDigitado := ' ' + numeroDigitado;
+  end;
+  if textoAtual[tamanho] in ['+', '-', '*', '/', '~'] then
+  begin
+    // Se o último caractere for um operador, adicione um espaço antes de adicionar o próximo dígito
+    Edit1.Text := textoAtual + ' ' + numeroDigitado;
+  end
+  else
+  begin
+    // Se o último caractere não for um operador, apenas adicione o dígito ao Edit1
+    Edit1.Text := textoAtual + numeroDigitado;
+  end;
+end;
+
+// Esta função recebe uma expressão na Notação Polonesa (NP)
+// divide a expressão em tokens
+// e processa cada token.
+function TForm1.AvaliarNP(expressao: string): Double;
+var
+  pilha: TPilhaDouble;
+  tokens: TStringArray;
+  token: string;
+  op1, op2: Double;
+  foundNil: Boolean;
+  base: Integer;
+begin
+  IniciarPilhaDouble(pilha);
+  tokens := SplitString(expressao, ' ');
+
+  foundNil := False;
+
+  for token in tokens do
+  begin
+    if token = '' then
+    begin
+      foundNil := True;
+      Break;
+    end;
+    if TryStrToFloat(token, op1) then // se o token é um número é colocado na pilha
+    begin
+      PushDouble(pilha, op1);
+    end
+    else if ehOperador(token) then
+    begin
+      if (token <> '~') or (token <> 's') then // Operações que requerem dois operandos
+      begin
+      // se o token é um operador diferente de '~', dois operandos são retirados da pilha
+      // e a operação é realizada em assembly
+       op2 := PopDouble(pilha);
+       op1 := PopDouble(pilha);
+       end
+       else // Operação que requer apenas um operando
+       begin
+       // se o token é '~', apenas um operando é retirado da pilha
+       // e a operação de negativo é realizada em assembly
+         op1 := PopDouble(pilha);
+         base := 10;
+       end;
+
+      if token = '+' then
+      asm
+        fld op1
+        fadd op2
+        fstp op1
+      end
+      else if token = '-' then
+      asm
+        fld op1
+        fsub op2
+        fstp op1
+      end
+      else if token = '*' then
+      asm
+        fld op1
+        fmul op2
+        fstp op1
+      end
+      else if token = '/' then
+      asm
+        fld op1
+        fdiv op2
+        fstp op1
+      end
+      else if token = '~' then
+      asm
+        fld op1
+        fchs
+        fstp op1
+      end
+
+      else if token = 's' then
+      asm
+       finit //inicializa a pilha
+       fld1 //[ 1.0 ]
+       fld base //[ n ; 1.0 ] // para fazer 1 * log2n
+       fyl2x //[ log2n ] // st = st(1).log2(st)
+       fld1 //[ 1.0 ; log2n ]
+       fdiv st, st(1) //[ 1.0 / log2n ]
+       fld op1 //[ x ; 1.0 / log2n ]
+       fyl2x //[1.0 / log2n * log2x ] // st = st(1).log2(st)
+       fstp op1
+       end;
+
+      PushDouble(pilha, op1);
+    end
+    else
+    begin
+      raise Exception.Create('Token Invalido: ' + token);
+    end;
+  end;
+
+  if foundNil then
+  begin
+    Result := PopDouble(pilha);
+    //raise Exception.Create('Valor "ANSISTRING(nil)" encontrado. Encerrando o processamento.');
+  end;
+
+  //Result := PopDouble(pilha);
+end;
+
+
+
 
 procedure TForm1.ButtonEqualsClick(Sender: TObject);
 var
@@ -223,6 +391,7 @@ procedure TForm1.ButtonClearClick(Sender: TObject);
 begin
   // Limpa o conteúdo do Edit1
   Edit1.Text := '';
+  Edit2.Text := '';
 end;
 
 // Operações da Pilha de Char
@@ -279,105 +448,12 @@ begin
   Result := pilha.topo < 0;
 end;
 
-function ehOperador(s: string): Boolean;
+function TForm1.ehOperador(s: string): Boolean;
 begin
   Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~');
 end;
 
-// Esta função recebe uma expressão na Notação Polonesa (NP)
-// divide a expressão em tokens
-// e processa cada token.
-function TForm1.AvaliarNP(expressao: string): Double;
-var
-  pilha: TPilhaDouble;
-  tokens: TStringArray;
-  token: string;
-  op1, op2: Double;
-  foundNil: Boolean;
-begin
-  IniciarPilhaDouble(pilha);
-  tokens := SplitString(expressao, ' ');
-
-  foundNil := False;
-
-  for token in tokens do
-  begin
-    if token = '' then
-    begin
-      foundNil := True;
-      Break;
-    end;
-    if TryStrToFloat(token, op1) then // se o token é um número é colocado na pilha
-    begin
-      PushDouble(pilha, op1);
-    end
-    else if ehOperador(token) then
-begin
-  if token <> '~' then // Operações que requerem dois operandos
-  begin
-    // se o token é um operador diferente de '~', dois operandos são retirados da pilha
-    // e a operação é realizada em assembly
-    op2 := PopDouble(pilha);
-    op1 := PopDouble(pilha);
-  end
-  else // Operação que requer apenas um operando
-  begin
-    // se o token é '~', apenas um operando é retirado da pilha
-    // e a operação de negativo é realizada em assembly
-    op1 := PopDouble(pilha);
-  end;
-
-  if token = '+' then
-  asm
-    fld op1
-    fadd op2
-    fstp op1
-  end
-  else if token = '-' then
-  asm
-    fld op1
-    fsub op2
-    fstp op1
-  end
-  else if token = '*' then
-  asm
-    fld op1
-    fmul op2
-    fstp op1
-  end
-  else if token = '/' then
-  asm
-    fld op1
-    fdiv op2
-    fstp op1
-  end
-  else if token = '~' then
-  asm
-    fld op1
-    fchs
-    fstp op1
-  end;
-
-  PushDouble(pilha, op1);
-end;
-
-    end
-    else
-    begin
-      raise Exception.Create('Token Invalido: ' + token);
-    end;
-  end;
-
-  if foundNil then
-  begin
-    Result := PopDouble(pilha);
-    //raise Exception.Create('Valor "ANSISTRING(nil)" encontrado. Encerrando o processamento.');
-  end;
-
-  //Result := PopDouble(pilha);
-end;
-
-function ehLetraOuDigito(c: Char): Boolean;
+function TForm1.ehLetraOuDigito(c: Char): Boolean;
 begin
   Result := CharInSet(c, ['A'..'Z', 'a'..'z', '0'..'9']);
 end;
