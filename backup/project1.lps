@@ -10,7 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="21" Y="6"/>
-        <UsageCount Value="33"/>
+        <UsageCount Value="35"/>
       </Unit>
       <Unit>
         <Filename Value="unit1.pas"/>
@@ -20,9 +20,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="276"/>
-        <CursorPos Y="202"/>
-        <UsageCount Value="33"/>
+        <TopLine Value="309"/>
+        <CursorPos X="3" Y="317"/>
+        <UsageCount Value="35"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -32,7 +32,7 @@
         <EditorIndex Value="-1"/>
         <CursorPos Y="235"/>
         <FoldState Value=" T3iZ0{K021 PidkR0 T6lc01 T1lD0M]MKR0P"/>
-        <UsageCount Value="28"/>
+        <UsageCount Value="30"/>
       </Unit>
       <Unit>
         <Filename Value="unit3.pas"/>
@@ -41,13 +41,13 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="72"/>
         <CursorPos X="22" Y="85"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="29"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="5136"/>
-        <CursorPos X="54" Y="5145"/>
+        <TopLine Value="2927"/>
+        <CursorPos Y="2976"/>
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
@@ -76,133 +76,146 @@
       <Unit>
         <Filename Value="v2\unit2.pas"/>
         <UnitName Value="Unit2"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="37"/>
         <CursorPos Y="10"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="12"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus\lcl\include\buttoncontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="5"/>
+        <CursorPos Y="21"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus\lcl\include\buttons.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="154"/>
+        <CursorPos Y="170"/>
+        <UsageCount Value="10"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="127" TopLine="108"/>
+        <Caret Line="304" TopLine="283"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="128" TopLine="108"/>
+        <Caret Line="308" TopLine="283"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="130" TopLine="108"/>
+        <Caret Line="312" TopLine="287"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="131" TopLine="108"/>
+        <Caret Line="313" TopLine="288"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="133" TopLine="108"/>
+        <Caret Line="315" TopLine="290"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="118" Column="42" TopLine="108"/>
+        <Caret Line="321" TopLine="306"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="131" TopLine="108"/>
+        <Caret Line="323" TopLine="306"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="130" TopLine="108"/>
+        <Caret Line="324" TopLine="306"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="131" TopLine="108"/>
+        <Caret Line="325" TopLine="306"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="151" TopLine="136"/>
+        <Caret Line="340" TopLine="325"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="130" TopLine="114"/>
+        <Caret Line="299" TopLine="283"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="131" TopLine="114"/>
+        <Caret Line="301" TopLine="283"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="130" TopLine="114"/>
+        <Caret Line="302" TopLine="283"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="131" TopLine="114"/>
+        <Caret Line="348" TopLine="333"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="133" TopLine="114"/>
+        <Caret Line="350" TopLine="333"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="130" TopLine="114"/>
+        <Caret Line="355" TopLine="333"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="131" TopLine="114"/>
+        <Caret Line="209" TopLine="194"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="155" TopLine="140"/>
+        <Caret Line="214" TopLine="194"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="160" TopLine="140"/>
+        <Caret Line="335" Column="53" TopLine="323"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="164" TopLine="140"/>
+        <Caret Line="351" Column="68" TopLine="345"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="202" Column="16" TopLine="187"/>
+        <Caret Line="299" TopLine="293"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="205" Column="49" TopLine="187"/>
+        <Caret Line="301" TopLine="293"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="336" Column="64" TopLine="319"/>
+        <Caret Line="303" TopLine="293"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="202" TopLine="186"/>
+        <Caret Line="305" TopLine="293"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="203" TopLine="186"/>
+        <Caret Line="310" TopLine="293"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="206" TopLine="186"/>
+        <Caret Line="312" TopLine="293"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="291" TopLine="286"/>
+        <Caret Line="305" TopLine="293"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="202" TopLine="186"/>
+        <Caret Line="310" TopLine="293"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="203" TopLine="186"/>
+        <Caret Line="314" TopLine="293"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="206" TopLine="186"/>
+        <Caret Line="318" TopLine="293"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -211,33 +224,27 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="unit1.pas"/>
-        <Line Value="291"/>
-      </Item>
-    </BreakPoints>
     <Watches>
       <Item>
-        <Expression Value="P1"/>
+        <Expression Value="op1"/>
       </Item>
       <Item>
-        <Expression Value="L1"/>
+        <Expression Value="op2"/>
       </Item>
       <Item>
-        <Expression Value="i"/>
+        <Expression Value="pilha"/>
       </Item>
       <Item>
-        <Expression Value="ch"/>
+        <Expression Value="token"/>
       </Item>
       <Item>
-        <Expression Value="expression"/>
+        <Expression Value="expressao"/>
       </Item>
       <Item>
-        <Expression Value="expressaoNP"/>
+        <Expression Value="foundNil"/>
+      </Item>
+      <Item>
+        <Expression Value="tokens"/>
       </Item>
     </Watches>
   </Debugging>

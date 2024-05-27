@@ -69,6 +69,7 @@ type
     RadioButton1: TRadioButton;
     RadioButton2: TRadioButton;
     Memo1: TMemo;
+    procedure Button11Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ButtonClick(Sender: TObject);
     procedure ButtonEqualsClick(Sender: TObject);
@@ -142,7 +143,7 @@ begin
             if (not PilhaCharVazia(P1)) then
               PopChar(P1); // Remover '(' da pilha
           end;
-        '+', '-', '*', '/', '^':
+        '+', '-', '*', '/', '^', '~':
           begin
             while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(ch)) do
             begin
@@ -181,6 +182,11 @@ begin
   end;
   Button17.OnClick := @ButtonEqualsClick;
   Button31.OnClick := @ButtonClearClick;
+end;
+
+procedure TForm1.Button11Click(Sender: TObject);
+begin
+
 end;
 
 procedure TForm1.ButtonClick(Sender: TObject);
@@ -275,7 +281,7 @@ end;
 
 function ehOperador(s: string): Boolean;
 begin
-  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/');
+  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~');
 end;
 
 // Esta função recebe uma expressão na Notação Polonesa (NP)
@@ -287,22 +293,39 @@ var
   tokens: TStringArray;
   token: string;
   op1, op2: Double;
+  foundNil: Boolean;
 begin
   IniciarPilhaDouble(pilha);
   tokens := SplitString(expressao, ' ');
 
+  foundNil := False;
+
   for token in tokens do
   begin
+    if token = '' then
+    begin
+      foundNil := True;
+      Break;
+    end;
     if TryStrToFloat(token, op1) then // se o token é um número é colocado na pilha
     begin
       PushDouble(pilha, op1);
     end
     else if ehOperador(token) then
     begin
-      // se o token é um operador, dois operandos são retirados da pilha
+      if token <> '~' then // Operações que requerem dois operandos
+      begin
+      // se o token é um operador diferente de '~', dois operandos são retirados da pilha
       // e a operação é realizada em assembly
-      op2 := PopDouble(pilha);
-      op1 := PopDouble(pilha);
+       op2 := PopDouble(pilha);
+       op1 := PopDouble(pilha);
+       end
+       else // Operação que requer apenas um operando
+       begin
+       // se o token é '~', apenas um operando é retirado da pilha
+       // e a operação de negativo é realizada em assembly
+       op1 := PopDouble(pilha);
+       end;
 
       if token = '+' then
       asm
@@ -327,6 +350,12 @@ begin
         fld op1
         fdiv op2
         fstp op1
+      end
+      else if token = '~' then
+      asm
+        fld op1
+        fchs
+        fstp op1
       end;
 
       PushDouble(pilha, op1);
@@ -337,7 +366,13 @@ begin
     end;
   end;
 
-  Result := PopDouble(pilha);
+  if foundNil then
+  begin
+    Result := PopDouble(pilha);
+    //raise Exception.Create('Valor "ANSISTRING(nil)" encontrado. Encerrando o processamento.');
+  end;
+
+  //Result := PopDouble(pilha);
 end;
 
 function ehLetraOuDigito(c: Char): Boolean;
