@@ -1,0 +1,23 @@
+
+pilha temporária P1
+lista que armazrnará a expressão NP L1
+ 
+valor encontrado -> direto no final de L1
+
+operador encontrado -> topo da pilha P1 
+	operadores com maior precedencia em P1 devem ser transferidos para L1
+
+parenteses esquerdo encontrado -> colocado imediatamente me P1 
+parenteses direito encontrado -> todos os operadores em P1 transferidos para L1, até encontrar outro parentes esquerdo em P1
+
+6: negativo
+5: potencia
+4: * e / 
+3: + e - 
+2: < e > (não utilizaremos)
+1: ( e := 
+0: ) 
+
+
+exemplo: equação do 2 grau 
+( ~ B + ( B ^ 2 - 4 * A * C ) ^ 0.5 ) / ( 2 * A ) 

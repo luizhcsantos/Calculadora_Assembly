@@ -1,11 +1,11 @@
 object Form1: TForm1
-  Left = 316
-  Height = 400
-  Top = 154
-  Width = 686
+  Left = 145
+  Height = 517
+  Top = 271
+  Width = 1017
   Caption = 'Form1'
-  ClientHeight = 400
-  ClientWidth = 686
+  ClientHeight = 517
+  ClientWidth = 1017
   DesignTimePPI = 120
   OnCreate = FormCreate
   LCLVersion = '3.2.0.0'
@@ -111,7 +111,6 @@ object Form1: TForm1
     Top = 56
     Width = 610
     TabOrder = 12
-    Text = '0'
   end
   object Button13: TButton
     Left = 336
@@ -301,5 +300,38 @@ object Form1: TForm1
     Width = 94
     Caption = 'Backspace'
     TabOrder = 35
+  end
+  object Button33: TButton
+    Left = 336
+    Height = 31
+    Top = 112
+    Width = 46
+    Caption = '('
+    TabOrder = 36
+  end
+  object Button34: TButton
+    Left = 384
+    Height = 31
+    Top = 112
+    Width = 44
+    Caption = ')'
+    TabOrder = 37
+  end
+  object Edit2: TEdit
+    Left = 32
+    Height = 28
+    Top = 368
+    Width = 596
+    TabOrder = 38
+  end
+  object Memo1: TMemo
+    Left = 704
+    Height = 424
+    Top = 64
+    Width = 280
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 39
   end
 end

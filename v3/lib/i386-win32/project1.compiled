@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="C:\lazarus\fpc\3.2.2\bin\i386-win32\fpc.exe" Date="1482329590"/>
+  <Params Value=" -MObjFPC -Scghi -O1 -g -gl -l -vewnhibq &quot;-FiC:\Users\lhsan\OneDrive - Unesp\2024\1 Semestre\Microprocessadores\Trabalhos\2Bim\Calculadorav1\v3\lib\i386-win32&quot; &quot;-FuC:\Users\lhsan\OneDrive - Unesp\2024\1 Semestre\Microprocessadores\Trabalhos\2Bim\Calculadorav1\v3\&quot; &quot;-FUC:\Users\lhsan\OneDrive - Unesp\2024\1 Semestre\Microprocessadores\Trabalhos\2Bim\Calculadorav1\v3\lib\i386-win32\&quot; &quot;-FEC:\Users\lhsan\OneDrive - Unesp\2024\1 Semestre\Microprocessadores\Trabalhos\2Bim\Calculadorav1\v3\&quot; &quot;-oC:\Users\lhsan\OneDrive - Unesp\2024\1 Semestre\Microprocessadores\Trabalhos\2Bim\Calculadorav1\v3\project1.exe&quot; project1.lpr"/>
+</CONFIG>

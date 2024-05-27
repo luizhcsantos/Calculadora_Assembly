@@ -1,0 +1,97 @@
+#include "Pilha.h"
+
+Pilha* criaPilha() {
+
+	Pilha *p = (Pilha*) malloc(sizeof(Pilha));
+	no *n = malloc(sizeof(no));
+	p->topo = n;
+	p->topo->prox = NULL;
+	return p;
+}
+
+no* criaNo(int info) {
+
+	no *novo = (no*) malloc(sizeof(no));
+	novo->info = info;
+	novo->prox = NULL;
+	return novo;
+}
+
+bool pilhaVazia(Pilha *p) {
+
+	if (p->topo == NULL) return true;
+
+	else if (p->topo->prox == NULL) return true;
+
+	else return false;
+}
+
+
+void imprime(Pilha *p) {
+
+	no *queroImprimir;
+
+	if (pilhaVazia(p)) {
+		printf("\nPilha Vazia!\n");
+		return;
+	}
+
+	queroImprimir = p->topo;
+
+	do {
+		printf("\ninfo: %d", queroImprimir->info);
+		queroImprimir = queroImprimir->prox;
+	}while(queroImprimir->prox != NULL);
+	return;
+}
+
+int tamanho(Pilha *p) {
+
+	int tam = 0;
+	no *cont;
+
+	//if (Vazia(p)) return 0;
+
+	cont = p->topo;
+
+	do {
+		tam++;
+		cont = cont->prox;
+	}while (cont->prox != NULL);
+
+	return tam;
+}
+
+void push(Pilha *p, char info) {
+
+	no *novo = criaNo(info);
+
+	novo->prox = p->topo;
+	p->topo = novo;
+}
+
+
+char pop(Pilha *p) {
+
+	no *queroRemover;
+	char retorno;
+
+	if (pilhaVazia(p) || p == NULL) {
+		printf("\nPilha Vazia!\n");
+		return;
+	}
+    retorno = p->topo->info;
+	queroRemover = p->topo;
+	p->topo = queroRemover->prox;
+	free(queroRemover);
+	return retorno;
+}
+
+char peek(Pilha *pilha) {
+    if (pilhaVazia(pilha)) {
+        printf("Erro: Pilha vazia.\n");
+        exit(EXIT_FAILURE);
+    }
+    return stack->items[stack->top];
+}
+

@@ -1,0 +1,37 @@
+# depslib dependency file v1.0
+1716488147 source:c:\users\lhsan\onedrive - unesp\2024\1 semestre\microprocessadores\trabalhos\2bim\calculadorav1\npemc\npemc\main.c
+	<stdio.h>
+	<stdlib.h>
+	"ListaEncadeadaEstatica.h"
+	"Pilha.h"
+	"infixaParaPosfixa.h"
+
+1716327325 source:c:\users\lhsan\onedrive - unesp\2024\1 semestre\microprocessadores\trabalhos\2bim\calculadorav1\npemc\npemc\listaencadeadaestatica.c
+	"ListaEncadeadaEstatica.h"
+
+1716327290 c:\users\lhsan\onedrive - unesp\2024\1 semestre\microprocessadores\trabalhos\2bim\calculadorav1\npemc\npemc\listaencadeadaestatica.h
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+
+1716488903 c:\users\lhsan\onedrive - unesp\2024\1 semestre\microprocessadores\trabalhos\2bim\calculadorav1\npemc\npemc\pilha.h
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+
+1716488861 source:c:\users\lhsan\onedrive - unesp\2024\1 semestre\microprocessadores\trabalhos\2bim\calculadorav1\npemc\npemc\pilha.c
+	"Pilha.h"
+
+1716487843 source:c:\users\lhsan\onedrive - unesp\2024\1 semestre\microprocessadores\trabalhos\2bim\calculadorav1\npemc\npemc\infixaparaposfixa.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"Pilha.h"
+	"infixaParaPosfixa.h"
+
+1716488110 c:\users\lhsan\onedrive - unesp\2024\1 semestre\microprocessadores\trabalhos\2bim\calculadorav1\npemc\npemc\infixaparaposfixa.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+

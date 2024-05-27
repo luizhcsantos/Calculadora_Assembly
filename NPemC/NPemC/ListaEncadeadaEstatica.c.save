@@ -1,0 +1,73 @@
+
+#include "ListaEncadeadaEstatica.h"
+
+
+void InicializaLista(struct lista *L){
+
+	int i;
+	L->disp = 0;
+	L->prim = -1;
+	for (i=0;i<MAX-1; i++ ) {
+		L->A[i].prox = i+1;
+	}
+	L->A[i].prox = -1;
+};
+
+void Insere(struct lista *L, int elem) {
+
+	int i;
+
+	i = L->disp;
+
+	if (L->disp == MAX) {
+		printf("\nLista cheia\n");
+	} else {
+		L->A[i].elem = elem;
+		L->A[i].prox = i+1;
+		L->disp = i+1;
+	}
+
+};
+
+void Imprime(struct lista *L) {
+
+	int i;
+
+	printf("\n");
+	if ()
+	for (i=0; i< L->disp; i++) {
+		printf("valor: %d\n", L->A[i].elem);
+	}
+	//printf("\nDisponivel: %d\n", L->disp);
+	printf("\n");
+};
+
+
+bool Vazia(struct lista *L) {
+
+	if (L->disp == 0) return true; // vazia
+	else return false; 			  // pelo menos 1 elemento
+
+};
+
+bool Retira(struct lista *L, int pos) {
+
+	int aux, i, k;
+
+	if (pos >= L->disp) return false;
+
+	i = 0;
+	while (i <= L->disp) {
+		if (i == pos){
+			aux = L->A[i].elem;
+			for (k = i+1; k < L->disp; k++) {
+					L->A[k-1] = L->A[k];
+			}
+			L->disp = (L->disp )-1;
+			break;
+		}
+		i++;
+	};
+	return true;
+};
+
