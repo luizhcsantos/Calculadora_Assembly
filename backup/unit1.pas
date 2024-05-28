@@ -4,7 +4,7 @@ unit Unit1;
 
 // Trabalho Bimestral de Microprocessadores
 // Calculadora Científica utilizando a Notação Polonesa (também chamada de Notação Pós-fixa)
-// Os cálculos são realizados em Assembly
+// Todos os cálculos são realizados em Assembly
 
 interface
 
@@ -134,15 +134,18 @@ end;
 function TForm1.Precedence(op: string): integer;
 begin
   case op of
-    '~': Precedence := 6;
-    '^': Precedence := 5;
-    's': Precedence := 5;
+    '~': Precedence := 6; // troca de sinal
+    '^': Precedence := 5; // potência
+    's': Precedence := 5; // raiz quadrada (sqrt)
+    'l': Precedence := 5; // log
+    'c': Precedence := 5; // cosseno (cos)
     '*', '/': Precedence := 4;
     '+', '-': Precedence := 3;
-    '<', '>': Precedence := 2;
+    '<', '>': Precedence := 2; // não há implementação de < ou > na nossa calculadora
     '(': Precedence := 1;
+    ')': Precedence := 0;
   else
-    Precedence := 0;
+    Precedence := -1;
   end;
 end;
 
@@ -332,7 +335,8 @@ var
   token: string;
   op1, op2: Double;
   foundNil: Boolean;
-  base: Integer;
+  base: Double;
+  x: Double;
 begin
   IniciarPilhaDouble(pilha);
   tokens := SplitString(expressao, ' ');
@@ -352,9 +356,10 @@ begin
     end
     else if ehOperador(token) then
     begin
-      if (token = '~') or (token = 's') or (token = 'l') then // Operações que requerem dois operandos
+      if (token = '~') or (token = 's') or (token = 'l') or (token = 'c') then // Operações que requerem dois operandos
       begin
         op1 := PopDouble(pilha);
+        base := 10;
 
         if token = '~' then
         asm
@@ -362,25 +367,30 @@ begin
           fchs
           fstp op1
         end
-        else if token = 'sqrt' then
+        else if token = 's' then
         asm
          fld op1
          fsqrt
          fstp op1
         end
-        else if token = 'log' then
-            asm
-             finit //inicializa a pilha
-             fld1 //[ 1.0 ]
-             fld base //[ n ; 1.0 ] // para fazer 1 * log2n
-             fyl2x //[ log2n ] // st = st(1).log2(st)
-             fld1 //[ 1.0 ; log2n ]
-             fdiv st, st(1) //[ 1.0 / log2n ]
-             fld op1 //[ x ; 1.0 / log2n ]
-             fyl2x //[1.0 / log2n * log2x ] // st = st(1).log2(st)
-             fstp op1
-            end
-       end
+        else if token = 'l' then
+        asm
+         finit          //inicializa a pilha
+         fld1           //[ 1.0 ]
+         fld base       //[ n ; 1.0 ] // para fazer 1 * log2n
+         fyl2x          //[ log2n ] // st = st(1).log2(st)
+         fld1           //[ 1.0 ; log2n ]
+         fdiv st, st(1) //[ 1.0 / log2n ]
+         fld op1        //[ x ; 1.0 / log2n ]
+         fyl2x          //[1.0 / log2n * log2x ] // st = st(1).log2(st)
+         fstp op1
+        end
+        else if token = 'c' then
+        asm
+         fld op1
+         fcos
+         fstp op1
+        end
        else // Operações que requerem dois operandos
        begin
             op2 := PopDouble(pilha);
@@ -519,7 +529,7 @@ end;
 
 function TForm1.ehOperador(s: string): Boolean;
 begin
-  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = 's') or (s = 'l');
+  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = 's') or (s = 'l') or (s = 'c');
 end;
 
 function TForm1.ehLetraOuDigito(c: Char): Boolean;

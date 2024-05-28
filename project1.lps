@@ -10,7 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="21" Y="6"/>
-        <UsageCount Value="46"/>
+        <UsageCount Value="47"/>
       </Unit>
       <Unit>
         <Filename Value="unit1.pas"/>
@@ -20,9 +20,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="432"/>
-        <CursorPos X="59" Y="437"/>
-        <UsageCount Value="46"/>
+        <TopLine Value="323"/>
+        <CursorPos Y="339"/>
+        <UsageCount Value="47"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -32,7 +32,7 @@
         <EditorIndex Value="-1"/>
         <CursorPos Y="235"/>
         <FoldState Value=" T3iZ0{K021 PidkR0 T6lc01 T1lD0M]MKR0P"/>
-        <UsageCount Value="41"/>
+        <UsageCount Value="42"/>
       </Unit>
       <Unit>
         <Filename Value="unit3.pas"/>
@@ -41,14 +41,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="72"/>
         <CursorPos X="22" Y="85"/>
-        <UsageCount Value="40"/>
+        <UsageCount Value="41"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus\lcl\include\control.inc"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="2961"/>
-        <CursorPos X="12" Y="2968"/>
-        <UsageCount Value="13"/>
+        <TopLine Value="2289"/>
+        <CursorPos Y="2305"/>
+        <UsageCount Value="14"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -84,139 +84,149 @@
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus\lcl\include\buttoncontrol.inc"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="5"/>
-        <CursorPos Y="21"/>
-        <UsageCount Value="9"/>
+        <CursorPos Y="22"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus\lcl\include\buttons.inc"/>
-        <EditorIndex Value="-1"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="154"/>
         <CursorPos Y="170"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="C:\lazarus\lcl\include\wincontrol.inc"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="5415"/>
+        <CursorPos Y="5431"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="331" Column="27" TopLine="314"/>
+        <Caret Line="435" TopLine="419"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="134" Column="38" TopLine="122"/>
+        <Caret Line="437" TopLine="419"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="93" Column="35" TopLine="83"/>
+        <Caret Line="442" TopLine="419"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="443" TopLine="425"/>
+        <Caret Line="464" TopLine="447"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="330" TopLine="313"/>
+        <Caret Line="469" TopLine="447"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus\lcl\include\control.inc"/>
+        <Caret Line="2976" TopLine="2961"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus\lcl\include\control.inc"/>
+        <Caret Line="2978" TopLine="2961"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus\lcl\include\buttoncontrol.inc"/>
+        <Caret Line="56" TopLine="39"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus\lcl\include\buttons.inc"/>
+        <Caret Line="170" TopLine="154"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus\lcl\include\buttoncontrol.inc"/>
+        <Caret Line="22" TopLine="5"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus\lcl\include\control.inc"/>
+        <Caret Line="2305" TopLine="2289"/>
+      </Position>
+      <Position>
+        <Filename Value="C:\lazarus\lcl\include\wincontrol.inc"/>
+        <Caret Line="5431" TopLine="5415"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="331" TopLine="313"/>
+        <Caret Line="340" TopLine="323"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="332" TopLine="313"/>
+        <Caret Line="341" TopLine="323"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="334" TopLine="313"/>
+        <Caret Line="342" TopLine="323"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="336" TopLine="313"/>
+        <Caret Line="344" TopLine="323"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="338" TopLine="313"/>
+        <Caret Line="346" TopLine="323"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="343" TopLine="315"/>
+        <Caret Line="348" TopLine="323"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="327" Column="11" TopLine="324"/>
+        <Caret Line="353" TopLine="325"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="338" TopLine="324"/>
+        <Caret Line="355" TopLine="327"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="343" TopLine="324"/>
+        <Caret Line="348" TopLine="327"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="347" TopLine="324"/>
+        <Caret Line="353" TopLine="327"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="349" TopLine="330"/>
+        <Caret Line="357" TopLine="329"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="443" TopLine="426"/>
+        <Caret Line="359" TopLine="331"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="252" Column="77" TopLine="234"/>
+        <Caret Line="361" TopLine="334"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="227" Column="55" TopLine="208"/>
+        <Caret Line="362" TopLine="335"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="250" Column="23" TopLine="234"/>
+        <Caret Line="364" TopLine="337"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="220" Column="55" TopLine="207"/>
+        <Caret Line="370" TopLine="354"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="139" Column="40" TopLine="127"/>
+        <Caret Line="376" TopLine="354"/>
       </Position>
       <Position>
         <Filename Value="unit1.pas"/>
-        <Caret Line="449" TopLine="432"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="336" TopLine="319"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="337" TopLine="319"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="338" TopLine="319"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="340" TopLine="319"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="342" TopLine="319"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="352" Column="59" TopLine="338"/>
-      </Position>
-      <Position>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="371" Column="27" TopLine="349"/>
+        <Caret Line="394" Column="7" TopLine="373"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -227,40 +237,13 @@
   <Debugging>
     <Watches>
       <Item>
-        <Expression Value="expression"/>
-      </Item>
-      <Item>
-        <Expression Value="P1"/>
-      </Item>
-      <Item>
-        <Expression Value="ch"/>
-      </Item>
-      <Item>
-        <Expression Value="tempNum"/>
-      </Item>
-      <Item>
-        <Expression Value="tempOp"/>
-      </Item>
-      <Item>
-        <Expression Value="operacoesEspeciais"/>
-      </Item>
-      <Item>
-        <Expression Value="i"/>
-      </Item>
-      <Item>
-        <Expression Value="token"/>
-      </Item>
-      <Item>
-        <Expression Value="tokens"/>
+        <Expression Value="expressao"/>
       </Item>
       <Item>
         <Expression Value="pilha"/>
       </Item>
       <Item>
-        <Expression Value="s"/>
-      </Item>
-      <Item>
-        <Expression Value="Result"/>
+        <Expression Value="token"/>
       </Item>
       <Item>
         <Expression Value="op1"/>
@@ -269,7 +252,10 @@
         <Expression Value="op2"/>
       </Item>
       <Item>
-        <Expression Value="expressao"/>
+        <Expression Value="x"/>
+      </Item>
+      <Item>
+        <Expression Value="base"/>
       </Item>
     </Watches>
   </Debugging>
