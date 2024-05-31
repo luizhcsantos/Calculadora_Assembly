@@ -95,7 +95,7 @@ type
     function Precedence(op: string): integer;
     function ehOperador(s: string): Boolean;
     function ehOperacaoEspecial(op: string): Boolean;
-    procedure Swap(var A, B: Integer);
+    procedure Troca(var A, B: Double);
 
 
   public
@@ -160,7 +160,7 @@ function TForm1.ehOperacaoEspecial(op: string): Boolean;
     j: Integer;
     operacoesEspeciais: array of string;
   begin
-    operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos', 'tan', 'ysqrt'];
+    operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos', 'tan'];
     Result := False;
     for j := Low(operacoesEspeciais) to High(operacoesEspeciais) do
     begin
@@ -191,6 +191,7 @@ begin
   tempNum := '';
   tempOp := '';
   expressao := StringReplace(expressao, 'x^y', '^', [rfReplaceAll]);
+  expressao := StringReplace(expressao, 'x^2', '^', [rfReplaceAll]);
   try
     i := 1;
     while i <= Length(expressao) do
@@ -247,7 +248,7 @@ begin
                 end;
             end;
           // Operações simples
-          '+', '-', '*', '/', '^', '~':
+          '+', '-', '*', '/', '^', '~', 'y':
             begin
               while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(ch)) do
               begin
@@ -328,7 +329,7 @@ begin
   end;
 
 
-  if textoAtual[tamanho] in ['+', '-', '*', '/', '~'] then
+  if textoAtual[tamanho] in ['+', '-', '*', '/', '~', 'y'] then
   begin
     // Se o último caractere for um operador, adicione um espaço antes de adicionar o próximo dígito
     Edit1.Text := textoAtual + ' ' + numeroDigitado;
@@ -424,7 +425,7 @@ begin
             end
             else if token = '^' then  // x^y
             begin
-               Swap(op2, op1);
+               Troca(op2, op1);
                asm
                  fld op1
                  fld1
@@ -443,11 +444,12 @@ begin
                  end
             end
 
-            else if token = 'ysqrt' then
+            else if (token = 'ysqrt') or (token = '2')then // x^y = op1^(1/op2)
             begin
-              x := 1/op2;
+              //Troca(op2, op1);
+              x := 1/op1;
              asm
-               fld op1
+               fld op2
                fld1
                fld x
                fyl2x
@@ -635,13 +637,13 @@ end;
 
 function TForm1.ehOperador(s: string): Boolean;
 begin
-  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = '^');
+  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = '^') or (s = 'ysqrt');
 end;
 
 
-procedure TForm1.Swap(var A, B: Integer);
+procedure TForm1.Troca(var A, B: Double);
 var
-  Temp: Integer;
+  Temp: Double;
 begin
   Temp := A;
   A := B;
