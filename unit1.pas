@@ -95,6 +95,7 @@ type
     function Precedence(op: string): integer;
     function ehOperador(s: string): Boolean;
     function ehOperacaoEspecial(op: string): Boolean;
+    procedure Swap(var A, B: Double);
 
 
   public
@@ -141,7 +142,7 @@ begin
   case op of
     '~': Precedence := 6; // troca de sinal
     '^': Precedence := 5; // potência
-    'sqrt': Precedence := 5; // raiz quadrada
+    'sqrt', 'ysqrt': Precedence := 5; // raiz quadrada
     'log', 'lan': Precedence := 5; // log  e log na base e
     'cos', 'sin', 'tan': Precedence := 5; // cosseno, seno e tangente
     '*', '/': Precedence := 4;
@@ -159,7 +160,7 @@ function TForm1.ehOperacaoEspecial(op: string): Boolean;
     j: Integer;
     operacoesEspeciais: array of string;
   begin
-    operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos', 'tan'];
+    operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos', 'tan', 'ysqrt'];
     Result := False;
     for j := Low(operacoesEspeciais) to High(operacoesEspeciais) do
     begin
@@ -189,13 +190,14 @@ begin
   L1 := TStringList.Create;
   tempNum := '';
   tempOp := '';
+  expressao := StringReplace(expressao, 'x^y', '^', [rfReplaceAll]);
   try
     i := 1;
     while i <= Length(expressao) do
     begin
       ch := expressao[i];
       // ch é um número
-      if ch in ['0'..'9', '.'] then
+      if ch in ['0'..'9', ','] then
       begin
         tempNum := tempNum + ch; // Acumula o número
       end
@@ -219,6 +221,7 @@ begin
           tempOp := '';
           end;
         end
+
       else
       begin
         if tempOp <> '' then
@@ -360,15 +363,18 @@ begin
   while i < Length(tokens) do
   begin
     token := tokens[i];
+
     if token = '' then
     begin
       foundNil := True;
       Break;
     end;
+
     if TryStrToFloat(token, op1) then // se o token é um número, é colocado na pilha
     begin
       PushDouble(pilha, op1);
     end
+
     else if ehOperador(token) then
     begin
       if (not PilhaDoubleVazia(pilha)) then
@@ -417,22 +423,47 @@ begin
               fstp op1
             end
             else if token = '^' then  // x^y
-            asm
-             fld op1
-             fld1
-             fld op2
-             fyl2x
-             fmul
-             fld st
-             frndint
-             fsub st(1), st
-             fxch
-             f2xm1
-             fld1
-             fadd
-             fscale
-             fstp op1
-            end;
+            begin
+               Swap(op2, op1);
+               asm
+                 fld op1
+                 fld1
+                 fld op2
+                 fyl2x
+                 fmul
+                 fld st
+                 frndint
+                 fsub st(1), st
+                 fxch
+                 f2xm1
+                 fld1
+                 fadd
+                 fscale
+                 fstp op1
+                 end
+            end
+
+            else if token = 'ysqrt' then
+            begin
+              x := 1/op2;
+             asm
+               fld op1
+               fld1
+               fld x
+               fyl2x
+               fmul
+               fld st
+               frndint
+               fsub st(1), st
+               fxch
+               f2xm1
+               fld1
+               fadd
+               fscale
+               fstp op1
+            end
+              end;
+
             PushDouble(pilha, op1);
        end;
     end
@@ -604,7 +635,17 @@ end;
 
 function TForm1.ehOperador(s: string): Boolean;
 begin
-  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = 'sqrt') or (s = 'log') or (s = 'cos');
+  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = '^');
+end;
+
+
+procedure TForm1.Swap(var A, B: Double);
+var
+  Temp: Double;
+begin
+  Temp := A;
+  A := B;
+  B := Temp;
 end;
 
 function TForm1.ehLetraOuDigito(c: Char): Boolean;
