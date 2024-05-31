@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 550
+  Left = 640
   Height = 444
-  Top = 94
+  Top = 142
   Width = 693
   Caption = 'Form1'
   ClientHeight = 444
@@ -322,8 +322,22 @@ object Form1: TForm1
   object Edit2: TEdit
     Left = 32
     Height = 28
-    Top = 368
+    Top = 384
     Width = 596
     TabOrder = 38
+  end
+  object Label1: TLabel
+    Left = 32
+    Height = 20
+    Top = 360
+    Width = 119
+    Caption = 'Expressão Pósfixa:'
+  end
+  object Label2: TLabel
+    Left = 28
+    Height = 20
+    Top = 32
+    Width = 109
+    Caption = 'Expressão infixa:'
   end
 end

@@ -66,6 +66,8 @@ type
     CheckBox1: TCheckBox;
     Edit1: TEdit;
     Edit2: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
     RadioButton1: TRadioButton;
     RadioButton2: TRadioButton;
     procedure Button11Click(Sender: TObject);
@@ -88,10 +90,11 @@ type
     function PopDouble(var pilha: TPilhaDouble): Double;
     function PilhaDoubleVazia(const pilha: TPilhaDouble): Boolean;
 
-    function InfixToPostfix(expression: string): string;
+    function InfixToPostfix(expressao: string): string;
     function ehLetraOuDigito(c: Char): Boolean;
     function Precedence(op: string): integer;
     function ehOperador(s: string): Boolean;
+    function ehOperacaoEspecial(op: string): Boolean;
 
 
   public
@@ -126,19 +129,21 @@ begin
 
 end;
 
+// Função para limpar a caixa de texto ao clicar no botão 'C'
 procedure TForm1.Button32Click(Sender: TObject);
 begin
   Edit1.Text := '';
 end;
 
+// Definição da precendência das operações
 function TForm1.Precedence(op: string): integer;
 begin
   case op of
     '~': Precedence := 6; // troca de sinal
     '^': Precedence := 5; // potência
-    's': Precedence := 5; // raiz quadrada (sqrt)
-    'l': Precedence := 5; // log
-    'c': Precedence := 5; // cosseno (cos)
+    'sqrt': Precedence := 5; // raiz quadrada
+    'log', 'lan': Precedence := 5; // log  e log na base e
+    'cos', 'sin', 'tan': Precedence := 5; // cosseno, seno e tangente
     '*', '/': Precedence := 4;
     '+', '-': Precedence := 3;
     '<', '>': Precedence := 2; // não há implementação de < ou > na nossa calculadora
@@ -149,20 +154,12 @@ begin
   end;
 end;
 
-function TForm1.InfixToPostfix(expression: string): string;
-var
-  P1: TPilhaChar;      // pilha para armazenar os operadores
-  L1: TStringList;     // lista para armazenar os valores da operação
-  i: integer;
-  ch: char;
-  tempNum: string;
-  tempOp: string;
-  operacoesEspeciais: array of string;
-
-  function ehOperacaoEspecial(op: string): Boolean;
+function TForm1.ehOperacaoEspecial(op: string): Boolean;
   var
     j: Integer;
+    operacoesEspeciais: array of string;
   begin
+    operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos', 'tan'];
     Result := False;
     for j := Low(operacoesEspeciais) to High(operacoesEspeciais) do
     begin
@@ -174,23 +171,36 @@ var
     end;
   end;
 
+function TForm1.InfixToPostfix(expressao: string): string;
+var
+  P1: TPilhaChar;      // pilha para armazenar os operadores
+  L1: TStringList;     // lista para armazenar os valores da operação
+  i: integer;
+  ch: char;
+  tempNum: string;     // variável temporária para acumular os digitos de um número (necessário para não separar números com 2 ou mais digitos)
+  tempOp: string;      // variável temporária para acumualr os caracteres que compõem o nome de uma função (ex: 's', 'q', 'r' e 't' = sqrt)
+  //operacoesEspeciais: array of string;
+
+  // função para verificar se a operação é uma das operações especiais sqrt, log, sin, cos, tan, etc.
+
+
 begin
-  // Lista de operações especiais
-  operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos'];
   IniciarPilhaChar(P1);
   L1 := TStringList.Create;
   tempNum := '';
   tempOp := '';
   try
     i := 1;
-    while i <= Length(expression) do
+    while i <= Length(expressao) do
     begin
-      ch := expression[i];
+      ch := expressao[i];
+      // ch é um número
       if ch in ['0'..'9', '.'] then
       begin
         tempNum := tempNum + ch; // Acumula o número
       end
       else
+      // ch é (parte de) uma operação
       begin
         if tempNum <> '' then
         begin
@@ -200,12 +210,12 @@ begin
 
       if ch in ['a'..'z', 'A'..'Z'] then
       begin
-        tempOp := tempOp + ch;
+        tempOp := tempOp + ch;   // Acumula a operação especial
         // Verifica se é uma operação especial completa
         if ehOperacaoEspecial(tempOp) then
         begin
-          PushChar(P1, tempOp[1]); // Empilha um '(' para a operação especial
-          //L1.Add(tempOp);    // Adiciona a operação especial à lista
+          //PushChar(P1, tempOp[1]); // Empilha um '(' para a operação especial
+          L1.Add(tempOp);    // Adiciona a operação especial à lista
           tempOp := '';
           end;
         end
@@ -221,17 +231,19 @@ begin
             PushChar(P1, ch);
           ')':
             begin
+            // Remove todos os elementos da pilha e adiciona na lista, até encontrar um (
               while (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] <> '(') do
               begin
                 L1.Add(PopChar(P1));
               end;
               if (not PilhaCharVazia(P1)) then
                 PopChar(P1); // Remover '(' da pilha
-              if (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] in ['s', 'l', 'c']) then
+              if (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] <> '(') then
               begin
                 L1.Add(PopChar(P1)); // Adiciona a operação especial
                 end;
             end;
+          // Operações simples
           '+', '-', '*', '/', '^', '~':
             begin
               while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(ch)) do
@@ -279,13 +291,13 @@ begin
   // Lista de operações especiais
   operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos'];
 
-  // Obtenha o dígito do botão clicado
+  // Obtém o dígito do botão clicado
   numeroDigitado := (Sender as TButton).Caption;
 
-  // Verifique se o texto atual do Edit1 é vazio
+  // Verifica se o texto atual do Edit1 é vazio
   if Edit1.Text = '' then
   begin
-    // Se o texto estiver vazio, apenas adicione o dígito ao Edit1
+    // Se o texto estiver vazio, apenas adiciona o dígito ao Edit1
     Edit1.Text := numeroDigitado + ' ';
     Exit;
   end;
@@ -337,67 +349,49 @@ var
   foundNil: Boolean;
   base: Double;
   x: Double;
+  i: integer;
 begin
   IniciarPilhaDouble(pilha);
   tokens := SplitString(expressao, ' ');
 
   foundNil := False;
 
-  for token in tokens do
+  i := 0;
+  while i < Length(tokens) do
   begin
+    token := tokens[i];
     if token = '' then
     begin
       foundNil := True;
       Break;
     end;
-    if TryStrToFloat(token, op1) then // se o token é um número é colocado na pilha
+    if TryStrToFloat(token, op1) then // se o token é um número, é colocado na pilha
     begin
       PushDouble(pilha, op1);
     end
     else if ehOperador(token) then
     begin
-      if (token = '~') or (token = 's') or (token = 'l') or (token = 'c') then // Operações que requerem dois operandos
+      if (not PilhaDoubleVazia(pilha)) then
       begin
-        op1 := PopDouble(pilha);
         base := 10;
+      //if (token = '~') or (token = 'sqrt') or (token = 'log') or (token = 'cos') or (token = 'sin') then // Operações que requerem dois operandos
+      //begin
 
         if token = '~' then
-        asm
-          fld op1
-          fchs
-          fstp op1
+        begin
+          op1 := PopDouble(pilha);
+          asm
+           fld op1
+           fchs
+           fstp op1
+          end;
+          op1 := PopDouble(pilha);
         end
-        else if token = 's' then
-        asm
-         fld op1
-         fsqrt
-         fstp op1
-        end
-        else if token = 'l' then
-        asm
-         finit          //inicializa a pilha
-         fld1           //[ 1.0 ]
-         fld base       //[ n ; 1.0 ] // para fazer 1 * log2n
-         fyl2x          //[ log2n ] // st = st(1).log2(st)
-         fld1           //[ 1.0 ; log2n ]
-         fdiv st, st(1) //[ 1.0 / log2n ]
-         fld op1        //[ x ; 1.0 / log2n ]
-         fyl2x          //[1.0 / log2n * log2x ] // st = st(1).log2(st)
-         fstp op1
-        end
-        else if token = 'c' then
-        asm
-         fld op1
-         fcos
-         fstp op1
-        end
-      end
+
        else // Operações que requerem dois operandos
        begin
             op2 := PopDouble(pilha);
             op1 := PopDouble(pilha);
-            base := 10;
-
             if token = '+' then
             asm
               fld op1
@@ -421,14 +415,94 @@ begin
               fld op1
               fdiv op2
               fstp op1
+            end
+            else if token = '^' then  // x^y
+            asm
+             fld op1
+             fld1
+             fld op2
+             fyl2x
+             fmul
+             fld st
+             frndint
+             fsub st(1), st
+             fxch
+             f2xm1
+             fld1
+             fadd
+             fscale
+             fstp op1
             end;
+            PushDouble(pilha, op1);
        end;
-      PushDouble(pilha, op1);
+    end
+    else
+    //begin
+    //  raise Exception.Create('Erro: Pilha vazia ao tentar aplicar operador binário.');
+    //end;
+    end
+    else if ehOperacaoEspecial(token) then
+    begin
+      if i + 1 < Length(tokens) then
+      begin
+        Inc(i);
+        if TryStrToFloat(tokens[i], op1) then
+        begin
+          PushDouble(pilha, op1);
+          op1 := PopDouble(pilha);
+          if token = 'sqrt' then
+          asm
+           fld op1
+           fsqrt
+           fstp op1
+          end
+          else if token = 'log' then
+          asm
+           finit          //inicializa a pilha
+           fld1           //[ 1.0 ]
+           fld base       //[ n ; 1.0 ] // para fazer 1 * log2n
+           fyl2x          //[ log2n ] // st = st(1).log2(st)
+           fld1           //[ 1.0 ; log2n ]
+           fdiv st, st(1) //[ 1.0 / log2n ]
+           fld op1        //[ x ; 1.0 / log2n ]
+           fyl2x          //[1.0 / log2n * log2x ] // st = st(1).log2(st)
+           fstp op1
+          end
+          else if token = 'cos' then
+          asm
+           fld op1
+           fcos
+           fstp op1
+          end
+          else if token = 'sin' then
+          asm
+           fld op1
+           fsin
+           fstp op1
+          end
+          else if token = 'tan' then
+          asm
+           fld op1
+           fptan
+           fstp op1
+          end;
+          PushDouble(pilha, op1);
+        end
+    else
+    begin
+     raise Exception.Create('Erro: Token inválido após operação especial: ' + tokens[i]);
+    end;
     end
     else
     begin
-      raise Exception.Create('Token Invalido: ' + token);
+      raise Exception.Create('Erro: Operação especial sem operando.');
     end;
+  end
+else
+begin
+  raise Exception.Create('Token Inválido: ' + token);
+  end;
+Inc(i);
   end;
 
   if foundNil then
@@ -530,7 +604,7 @@ end;
 
 function TForm1.ehOperador(s: string): Boolean;
 begin
-  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = 's') or (s = 'l') or (s = 'c');
+  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = 'sqrt') or (s = 'log') or (s = 'cos');
 end;
 
 function TForm1.ehLetraOuDigito(c: Char): Boolean;
