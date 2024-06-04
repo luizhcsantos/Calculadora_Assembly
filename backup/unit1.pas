@@ -141,10 +141,10 @@ function TForm1.Precedence(op: string): integer;
 begin
   case op of
     '~': Precedence := 6; // troca de sinal
-    '^': Precedence := 5; // potência
-    'sqrt', 'ysqrt': Precedence := 5; // raiz quadrada
+    'sqrt', 'y': Precedence := 5; // raiz quadrada
     'log', 'lan': Precedence := 5; // log  e log na base e
-    'cos', 'sin', 'tan': Precedence := 5; // cosseno, seno e tangente
+    'cos', 'sin', 'tan': Precedence := 5; // cosseno, seno e tangente  
+    '^': Precedence := 5; // potência
     '*', '/': Precedence := 4;
     '+', '-': Precedence := 3;
     '<', '>': Precedence := 2; // não há implementação de < ou > na nossa calculadora
@@ -191,7 +191,8 @@ begin
   tempNum := '';
   tempOp := '';
   expressao := StringReplace(expressao, 'x^y', '^', [rfReplaceAll]);
-  expressao := StringReplace(expressao, 'x^2', '^', [rfReplaceAll]);
+  expressao := StringReplace(expressao, 'x^2', '^2', [rfReplaceAll]);
+  expressao := StringReplace(expressao, 'ysqrt', 'y', [rfReplaceAll]);
   try
     i := 1;
     while i <= Length(expressao) do
@@ -444,7 +445,7 @@ begin
                  end
             end
 
-            else if (token = 'ysqrt') or (token = '2')then // x^y = op1^(1/op2)
+            else if (token = 'y') or (token = '2')then // x^y = op1^(1/op2)
             begin
               //Troca(op2, op1);
               x := 1/op1;
@@ -637,7 +638,7 @@ end;
 
 function TForm1.ehOperador(s: string): Boolean;
 begin
-  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = '^') or (s = 'ysqrt');
+  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = '^') or (s = 'y');
 end;
 
 
