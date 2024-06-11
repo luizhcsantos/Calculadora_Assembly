@@ -310,7 +310,7 @@ var
   numeroDigitado: string;
   tamanho: Integer;
   i: Integer;
-  operacoesEspeciais: array of string;  
+  operacoesEspeciais: array of string;
   isOperacaoEspecial: Boolean;
 begin
   // Lista de operações especiais

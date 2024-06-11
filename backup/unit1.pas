@@ -99,8 +99,8 @@ type
     function ehOperacaoEsp(op: string): Boolean;
 
     procedure Troca(var A, B: Double);
-    procedure chkGrausClick(Sender: TObject);
-    procedure chkRadianosClick(Sender: TObject);
+    //procedure chkGrausClick(Sender: TObject);
+    //procedure chkRadianosClick(Sender: TObject);
     function GrausParaRadianos(graus: Double): Double;
     function RadianosParaGraus(radianos: Double): Double;
     procedure AssemblyGrauRadiano(var valor: Double);
@@ -140,7 +140,7 @@ end;
 
 procedure TForm1.Button26Click(Sender: TObject);
 begin
-  Edit1.Text := FloatToSTr(Pi);
+  Edit1.Text := FloatToStr(Pi);
 end;
 
 // Função para limpar a caixa de texto ao clicar no botão 'C'
@@ -199,13 +199,6 @@ var
   tempNum: string;     // variável temporária para acumular os dígitos de um número (necessário para não separar números com 2 ou mais dígitos)
   tempOp: string;      // variável temporária para acumular os caracteres que compõem o nome de uma função (ex: 's', 'q', 'r' e 't' = sqrt)
 
-  // função para verificar se a operação é uma das operações especiais sqrt, log, sin, cos, tan, etc.
-  function ehOperacaoEspecial(const op: string): boolean;
-  begin
-    Result := (op = 'sqrt') or (op = 'log') or (op = 'sin') or
-              (op = 'cos') or (op = 'tan');
-  end;
-
 begin
   IniciarPilhaChar(P1);
   L1 := TStringList.Create;
@@ -237,13 +230,13 @@ begin
         if ch in ['a'..'z', 'A'..'Z'] then
         begin
           tempOp := tempOp + ch;   // Acumula a operação especial
-          if ehOperacaoEspecial(tempOp) then
+          if ehOperacaoEsp(tempOp) then
           begin
-            while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(tempOp[1])) do
+            while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(tempOp)) do
             begin
-              L1.Add(PopChar(P1));
+              L1.Add(PopChar(P1)); // desempilha operadores
             end;
-            PushChar(P1, tempOp); // Empilha a operação especial
+            PushChar(P1, tempOp[1]);
             tempOp := '';
           end;
         end
@@ -251,23 +244,24 @@ begin
         begin
           if tempOp <> '' then
           begin
-            L1.Add(tempOp);  // Adiciona a operação acumulada à lista
+            PushChar(P1, tempOp[1]); // Empilha a operação especial
             tempOp := '';
           end;
+
           case ch of
             '(':
-              PushChar(P1, ch);
+              begin
+                PushChar(P1, ch);
+              end;
             ')':
               begin
                 while (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] <> '(') do
                 begin
                   L1.Add(PopChar(P1));
                 end;
-                if (not PilhaCharVazia(P1)) then
-                  PopChar(P1); // Remover '(' da pilha
+                PopChar(P1); // remove '(' da pilha
               end;
-
-            '+', '-', '*', '/', '^', '~', 'y':
+            else
               begin
                 while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(ch)) do
                 begin
@@ -278,382 +272,59 @@ begin
           end;
         end;
       end;
+
       Inc(i);
     end;
 
     if tempNum <> '' then
     begin
-      L1.Add(tempNum); // Adiciona o último número acumulado, se houver
-    end;
-    if tempOp <> '' then
-    begin
-      L1.Add(tempOp);  // Adiciona a última operação acumulada, se houver
+      L1.Add(tempNum); // Adiciona o número acumulado restante à lista
     end;
 
-    while (not PilhaCharVazia(P1)) do
+    while not PilhaCharVazia(P1) do
     begin
       L1.Add(PopChar(P1));
     end;
 
-    Result := L1.Text.Replace(sLineBreak, ' ');
+    Result := L1.DelimitedText;
+
   finally
     L1.Free;
   end;
 end;
 
-
-
-
-procedure TForm1.ButtonClick(Sender: TObject);
-var
-  textoAtual: string;
-  numeroDigitado: string;
-  tamanho: Integer;
-  i: Integer;
-  operacoesEspeciais: array of string;  
-  isOperacaoEspecial: Boolean;
+function TForm1.ehOperador(s: string): Boolean;
 begin
-  // Lista de operações especiais
-  operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos', 'arcsin', 'arccos', 'arctan'];
-
-  // Obtém o dígito do botão clicado
-  numeroDigitado := (Sender as TButton).Caption;
-
-  // Verifica se o texto atual do Edit1 é vazio
-  if Edit1.Text = '' then
-  begin
-    if chkInversa.Checked and MatchStr(numeroDigitado, ['sin', 'cos', 'tan']) then
-       Edit1.Text := 'arc' + numeroDigitado + ' '
-    else
-       // Se o texto estiver vazio, apenas adiciona o dígito ao Edit1
-       Edit1.Text := numeroDigitado + ' ';
-    Exit;
-  end;
-
-  // Se chegamos aqui, significa que já há algum texto no Edit1
-  // Vamos verificar se o último caractere é um operador
-  textoAtual := TrimRight(Edit1.Text);
-  tamanho := Length(textoAtual);
-
-  isOperacaoEspecial := False;
-  for i := Low(operacoesEspeciais) to High(operacoesEspeciais) do
-  begin
-    if numeroDigitado = operacoesEspeciais[i] then
-    begin
-      if chkInversa.Checked then
-      begin
-        if MatchStr(numeroDigitado, ['sin', 'cos', 'tan']) then
-        begin
-           numeroDigitado := 'arc' + operacoesEspeciais[i] + ' ';
-        end
-      end
-
-      else
-      begin
-           numeroDigitado := operacoesEspeciais[i] + ' ';
-      end;
-
-      isOperacaoEspecial := True;
-      Break;
-    end;
-  end;
-
-  if not isOperacaoEspecial and ehOperador(numeroDigitado) then
-  begin
-    // Se for outro operador, adicione um espaço antes do operador
-    numeroDigitado := ' ' + numeroDigitado;
-  end;
-
-
-  if textoAtual[tamanho] in ['+', '-', '*', '/', '~', 'y'] then
-  begin
-    // Se o último caractere for um operador, adicione um espaço antes de adicionar o próximo dígito
-    Edit1.Text := textoAtual + ' ' + numeroDigitado;
-  end
-  else
-  begin
-    // Se o último caractere não for um operador, apenas adicione o dígito ao Edit1
-    Edit1.Text := textoAtual + numeroDigitado;
-  end;
+  Result := s[1] in ['+', '-', '*', '/', '^'];
 end;
 
-// Esta função recebe uma expressão na Notação Polonesa (NP)
-// divide a expressão em tokens
-// e processa cada token.
-function TForm1.AvaliarNP(expressao: string): Double;
-var
-  pilha: TPilhaDouble;
-  tokens: TStringArray;
-  token: string;
-  op1, op2: Double;
-  foundNil: Boolean;
-  base: Double;
-  x: Double;
-  i: integer;
-  expoenteEhInteiro: Boolean;
-  expoente: Integer;
+function TForm1.ehLetraOuDigito(c: Char): Boolean;
 begin
-  IniciarPilhaDouble(pilha);
-  tokens := SplitString(expressao, ' ');
-
-  foundNil := False;
-
-  i := 0;
-  while i < Length(tokens) do
-  begin
-    token := tokens[i];
-
-    if token = '' then
-    begin
-      foundNil := True;
-      Break;
-    end;
-
-    if TryStrToFloat(token, op1) then // se o token é um número, é colocado na pilha
-    begin
-      PushDouble(pilha, op1);
-    end
-
-    else if ehOperador(token) then
-    begin
-      if (not PilhaDoubleVazia(pilha)) then
-      begin
-        base := 10;
-      //if (token = '~') or (token = 'sqrt') or (token = 'log') or (token = 'cos') or (token = 'sin') then // Operações que requerem dois operandos
-      //begin
-
-        if token = '~' then
-        begin
-          op1 := PopDouble(pilha);
-          asm
-           fld op1
-           fchs
-           fstp op1
-          end;
-          PushDouble(pilha, op1);
-        end
-
-       else // Operações que requerem dois operandos
-       begin
-            op2 := PopDouble(pilha);
-            op1 := PopDouble(pilha);
-            if token = '+' then
-            asm
-              fld op1
-              fadd op2
-              fstp op1
-            end
-            else if token = '-' then
-            asm
-              fld op1
-              fsub op2
-              fstp op1
-            end
-            else if token = '*' then
-            asm
-              fld op1
-              fmul op2
-              fstp op1
-            end
-            else if token = '/' then
-            asm
-              fld op1
-              fdiv op2
-              fstp op1
-            end
-            else if token = '^' then  // x^y
-            begin
-              expoenteEhInteiro := TryStrToInt(FloatTOStr(op2), expoente);
-              if (op1 < 0) and (not expoenteEhInteiro) then
-              begin
-                raise Exception.Create('Erro: não é possível calcular a potência de um número negativo com expoente não inteiro. ');
-                end
-              else if expoenteEhInteiro then
-              begin
-                op1 := Power(op1, expoente);
-                end
-              else
-              begin
-               //Troca(op2, op1);
-               asm
-                 fld op1
-                 fld1
-                 fld op2
-                 fyl2x
-                 fmul
-                 fld st
-                 frndint
-                 fsub st(1), st
-                 fxch
-                 f2xm1
-                 fld1
-                 fadd
-                 fscale
-                 fstp op1
-                 end
-              end
-            end
-
-            else if (token = 'y') or (token = '2')then // x^y = op1^(1/op2)
-            begin
-              //Troca(op2, op1);
-              x := 1/op1;
-             asm
-               fld op2
-               fld1
-               fld x
-               fyl2x
-               fmul
-               fld st
-               frndint
-               fsub st(1), st
-               fxch
-               f2xm1
-               fld1
-               fadd
-               fscale
-               fstp op1
-            end
-              end;
-
-            PushDouble(pilha, op1);
-       end;
-    end
-    else
-    //begin
-    //  raise Exception.Create('Erro: Pilha vazia ao tentar aplicar operador binário.');
-    //end;
-    end
-    else if ehOperacaoEsp(token) then
-    begin
-      if i + 1 < Length(tokens) then
-      begin
-        Inc(i);
-        if TryStrToFloat(tokens[i], op1) then
-        begin
-          PushDouble(pilha, op1);
-          op1 := PopDouble(pilha);
-          if chkGraus.Checked then
-             op1 := DegToRad(op1);
-          if token = 'sqrt' then
-          asm
-           fld op1
-           fsqrt
-           fstp op1
-          end
-          else if token = 'log' then
-          asm
-           finit          //inicializa a pilha
-           fld1           //[ 1.0 ]
-           fld base       //[ n ; 1.0 ] // para fazer 1 * log2n
-           fyl2x          //[ log2n ] // st = st(1).log2(st)
-           fld1           //[ 1.0 ; log2n ]
-           fdiv st, st(1) //[ 1.0 / log2n ]
-           fld op1        //[ x ; 1.0 / log2n ]
-           fyl2x          //[1.0 / log2n * log2x ] // st = st(1).log2(st)
-           fstp op1
-          end
-          else if token = 'cos' then
-               asm
-                fld op1
-                fcos
-                fstp op1
-               end
-          else if token = 'sin' then
-               asm
-                 fld op1
-                 fsin
-                 fstp op1
-               end
-          else if token = 'tan' then
-          begin
-            // Obs: os valores de arctan estão no intervalo [-pi/2, pi/2]
-           if chkInversa.Checked then
-             asm
-              fld op1
-              fpatan
-              fstp op1
-             end;
-           end
-           else
-               asm
-                fld op1
-                fsincos
-		fdivp st(1), st(0)
-		fstp op1
-               end;
-               //asm
-               //  fld op1
-               //  fptan
-               //  fstp op1
-               //end;
-               // Converter o resultado de volta para graus se checkbox graus estiver marcado
-        // Converter o resultado de volta para graus se checkbox graus estiver marcado
-        if chkGraus.Checked then
-          AssemblyRadianoGrau(op1);
-        PushDouble(pilha, op1);
-        end
-    else
-    begin
-     raise Exception.Create('Erro: Token inválido após operação especial: ' + tokens[i]);
-    end;
-    end
-    else
-    begin
-      raise Exception.Create('Erro: Operação especial sem operando.');
-    end;
-  end
-else
-begin
-  raise Exception.Create('Token Inválido: ' + token);
-  end;
-Inc(i);
-  end;
-
-  if foundNil then
-  begin
-    Result := PopDouble(pilha);
-    //raise Exception.Create('Valor "ANSISTRING(nil)" encontrado. Encerrando o processamento.');
-  end;
-
-  //Result := PopDouble(pilha);
+  Result := c in ['0'..'9', 'a'..'z', 'A'..'Z'];
 end;
-
-
-
 
 procedure TForm1.ButtonEqualsClick(Sender: TObject);
 var
-  expressaoInfixa, expressaoNP: string;
-  resultado: Double;
+  expressao, posfixa: string;
+  valor: Double;
 begin
-  try
-    // Obtém a expressão infixa do Edit1
-    expressaoInfixa := Edit1.Text;
-
-    // Converte a expressão infixa para NP
-    expressaoNP := InfixToPostfix(expressaoInfixa);
-    Edit2.Text := expressaoNP;
-
-    // Calcula o resultado da expressão NP
-    resultado := AvaliarNP(expressaoNP);
-
-    // Exibe o resultado no Edit1
-    Edit1.Text := FloatToStr(resultado);
-  except
-    on E: Exception do
-      Edit1.Text := 'Error: ' + E.Message;
-  end;
+  expressao := Edit1.Text;
+  posfixa := InfixToPostfix(expressao);
+  valor := AvaliarNP(posfixa);
+  Edit2.Text := FloatToStr(valor);
 end;
 
 procedure TForm1.ButtonClearClick(Sender: TObject);
 begin
-  // Limpa o conteúdo do Edit1
-  Edit1.Text := '';
-  Edit2.Text := '';
+  Edit1.Clear;
+  Edit2.Clear;
 end;
 
-// Operações da Pilha de Char
+procedure TForm1.ButtonClick(Sender: TObject);
+begin
+  Edit1.Text := Edit1.Text + TButton(Sender).Caption;
+end;
+
 procedure TForm1.IniciarPilhaChar(var pilha: TPilhaChar);
 begin
   SetLength(pilha.dado, 0);
@@ -669,18 +340,16 @@ end;
 
 function TForm1.PopChar(var pilha: TPilhaChar): Char;
 begin
-  if pilha.topo < 0 then
-    raise Exception.Create('Stack underflow');
   Result := pilha.dado[pilha.topo];
   Dec(pilha.topo);
+  SetLength(pilha.dado, pilha.topo + 1);
 end;
 
 function TForm1.PilhaCharVazia(const pilha: TPilhaChar): Boolean;
 begin
-  Result := pilha.topo < 0;
+  Result := pilha.topo = -1;
 end;
 
-// Operações da Pilha de Double
 procedure TForm1.IniciarPilhaDouble(var pilha: TPilhaDouble);
 begin
   SetLength(pilha.dado, 0);
@@ -696,66 +365,106 @@ end;
 
 function TForm1.PopDouble(var pilha: TPilhaDouble): Double;
 begin
-  if pilha.topo < 0 then
-    raise Exception.Create('Stack underflow');
   Result := pilha.dado[pilha.topo];
   Dec(pilha.topo);
+  SetLength(pilha.dado, pilha.topo + 1);
 end;
 
 function TForm1.PilhaDoubleVazia(const pilha: TPilhaDouble): Boolean;
 begin
-  Result := pilha.topo < 0;
-end;
-
-function TForm1.ehOperador(s: string): Boolean;
-begin
-  Result := (s = '+') or (s = '-') or (s = '*') or (s = '/') or (s = '~') or (s = '^') or (s = 'y');
-end;
-
-
-procedure TForm1.Troca(var A, B: Double);
-var
-  Temp: Double;
-begin
-  Temp := A;
-  A := B;
-  B := Temp;
+  Result := pilha.topo = -1;
 end;
 
 function TForm1.GrausParaRadianos(graus: Double): Double;
 begin
-  Result := DegToRad(graus);
+  Result := graus * (Pi / 180);
 end;
 
 function TForm1.RadianosParaGraus(radianos: Double): Double;
 begin
-  Result := RadToDeg(radianos);
+  Result := radianos * (180 / Pi);
 end;
 
-procedure TForm1.chkGrausClick(Sender: TObject);
+procedure TForm1.Troca(var A, B: Double);
+var
+  temp: Double;
 begin
-  if chkGraus.Checked then
-    chkRadianos.Checked := False;
+  temp := A;
+  A := B;
+  B := temp;
 end;
 
-procedure TForm1.chkRadianosClick(Sender: TObject);
+function TForm1.AvaliarNP(expressao: string): Double;
+var
+  pilha: TPilhaDouble;
+  tokens: TStringList;
+  token: string;
+  i: integer;
+  x, y: Double;
 begin
-  if chkRadianos.Checked then
-    chkGraus.Checked := False;
+  IniciarPilhaDouble(pilha);
+  tokens := TStringList.Create;
+  tokens.Delimiter := ' ';
+  tokens.DelimitedText := expressao;
+
+  try
+    for i := 0 to tokens.Count - 1 do
+    begin
+      token := tokens[i];
+      if TryStrToFloat(token, x) then
+      begin
+        PushDouble(pilha, x);
+      end
+      else if ehOperador(token) then
+      begin
+        y := PopDouble(pilha);
+        x := PopDouble(pilha);
+        case token of
+          '+': PushDouble(pilha, x + y);
+          '-': PushDouble(pilha, x - y);
+          '*': PushDouble(pilha, x * y);
+          '/': PushDouble(pilha, x / y);
+          '^': PushDouble(pilha, Power(x, y));
+        end;
+      end
+      else if ehOperacaoEsp(token) then
+      begin
+        x := PopDouble(pilha);
+        if chkGraus.Checked then
+        begin
+          AssemblyRadianoGrau(x);
+        end;
+        case token of
+          'sqrt': PushDouble(pilha, sqrt(x));
+          'log': PushDouble(pilha, ln(x));
+          'sin': PushDouble(pilha, sin(x));
+          'cos': PushDouble(pilha, cos(x));
+          'tan': PushDouble(pilha, tan(x));
+          'arcsin': PushDouble(pilha, arcsin(x));
+          'arccos': PushDouble(pilha, arccos(x));
+          'arctan': PushDouble(pilha, arctan(x));
+        end;
+        if chkGraus.Checked then
+        begin
+          AssemblyGrauRadiano(x);
+        end;
+      end;
+    end;
+    Result := PopDouble(pilha);
+  finally
+    tokens.Free;
+  end;
 end;
 
 procedure TForm1.AssemblyGrauRadiano(var valor: Double);
 var
   constante: Double;
-begin
-  constante := 180.0;
+begin   
+  constante := Pi/180.0;
   asm
-    fld valor     // Load the value to convert
-    fldpi        // Load pi
-    fmulp st(1), st(0) // Multiply the value by pi
-    fld constante // Load 180
-    fdivp st(1), st(0) // Divide the result by 180
-    fstp valor    // Store the result back to the variable
+    fld valor
+    fmul constante // Pi / 180
+    fstp valor
   end;
 end;
 
@@ -763,20 +472,12 @@ procedure TForm1.AssemblyRadianoGrau(var valor: Double);
 var
   constante: Double;
 begin
-  constante := 180.0;
+  constante := 180.0/Pi;
   asm
-    fld valor     // Load the value to convert
-    fld constante // Load 180
-    fmulp st(1), st(0) // Multiply the value by 180
-    fldpi        // Load pi
-    fdivp st(1), st(0) // Divide the result by pi
-    fstp valor    // Store the result back to the variable
+    fld valor
+    fmul constante // 180 / Pi
+    fstp valor
   end;
-end;
-
-function TForm1.ehLetraOuDigito(c: Char): Boolean;
-begin
-  Result := CharInSet(c, ['A'..'Z', 'a'..'z', '0'..'9']);
 end;
 
 end.
