@@ -96,7 +96,7 @@ type
     function ehLetraOuDigito(c: Char): Boolean;
     function Precedence(op: string): integer;
     function ehOperador(s: string): Boolean;
-    function ehOperacaoEspecial(op: string): Boolean;
+    function ehOperacaoEsp(op: string): Boolean;
 
     procedure Troca(var A, B: Double);
     procedure chkGrausClick(Sender: TObject);
@@ -173,7 +173,7 @@ begin
   end;
 end;
 
-function TForm1.ehOperacaoEspecial(op: string): Boolean;
+function TForm1.ehOperacaoEsp(op: string): Boolean;
   var
     j: Integer;
     operacoesEspeciais: array of string;
@@ -196,12 +196,15 @@ var
   L1: TStringList;     // lista para armazenar os valores da operação
   i: integer;
   ch: char;
-  tempNum: string;     // variável temporária para acumular os digitos de um número (necessário para não separar números com 2 ou mais digitos)
-  tempOp: string;      // variável temporária para acumualr os caracteres que compõem o nome de uma função (ex: 's', 'q', 'r' e 't' = sqrt)
-  //operacoesEspeciais: array of string;
+  tempNum: string;     // variável temporária para acumular os dígitos de um número (necessário para não separar números com 2 ou mais dígitos)
+  tempOp: string;      // variável temporária para acumular os caracteres que compõem o nome de uma função (ex: 's', 'q', 'r' e 't' = sqrt)
 
   // função para verificar se a operação é uma das operações especiais sqrt, log, sin, cos, tan, etc.
-
+  function ehOperacaoEspecial(const op: string): boolean;
+  begin
+    Result := (op = 'sqrt') or (op = 'log') or (op = 'sin') or
+              (op = 'cos') or (op = 'tan');
+  end;
 
 begin
   IniciarPilhaChar(P1);
@@ -212,74 +215,70 @@ begin
   expressao := StringReplace(expressao, 'x^2', '^2', [rfReplaceAll]);
   expressao := StringReplace(expressao, 'ysqrt', 'y', [rfReplaceAll]);
   expressao := StringReplace(expressao, 'pi', FloatToStr(Pi), [rfReplaceAll]);
+
   try
     i := 1;
     while i <= Length(expressao) do
     begin
       ch := expressao[i];
-      // ch é um número
+
       if ch in ['0'..'9', ','] then
       begin
         tempNum := tempNum + ch; // Acumula o número
       end
       else
-      // ch é (parte de) uma operação
       begin
         if tempNum <> '' then
         begin
-          L1.Add(tempNum); // Adiciona o numero acumulado à lista
+          L1.Add(tempNum); // Adiciona o número acumulado à lista
           tempNum := '';
         end;
 
-      if ch in ['a'..'z', 'A'..'Z'] then
-      begin
-        tempOp := tempOp + ch;   // Acumula a operação especial
-        // Verifica se é uma operação especial completa
-        if ehOperacaoEspecial(tempOp) then
+        if ch in ['a'..'z', 'A'..'Z'] then
         begin
-          //PushChar(P1, tempOp[1]); // Empilha um '(' para a operação especial
-          L1.Add(tempOp);    // Adiciona a operação especial à lista
-          tempOp := '';
+          tempOp := tempOp + ch;   // Acumula a operação especial
+          if ehOperacaoEspecial(tempOp) then
+          begin
+            while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(tempOp[1])) do
+            begin
+              L1.Add(PopChar(P1));
+            end;
+            PushChar(P1, tempOp[1]); // Empilha a operação especial
+            tempOp := '';
           end;
         end
-
-      else
-      begin
-        if tempOp <> '' then
+        else
         begin
-          L1.Add(tempOp);  // Adiciona a operação acumulada à lista
-          tempOp := '';
+          if tempOp <> '' then
+          begin
+            L1.Add(tempOp);  // Adiciona a operação acumulada à lista
+            tempOp := '';
           end;
-        case ch of
-          '(':
-            PushChar(P1, ch);
-          ')':
-            begin
-            // Remove todos os elementos da pilha e adiciona na lista, até encontrar um (
-              while (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] <> '(') do
-              begin
-                L1.Add(PopChar(P1));
-              end;
-              if (not PilhaCharVazia(P1)) then
-                PopChar(P1); // Remover '(' da pilha
-              if (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] <> '(') then
-              begin
-                L1.Add(PopChar(P1)); // Adiciona a operação especial
-                end;
-            end;
-          // Operações simples
-          '+', '-', '*', '/', '^', '~', 'y':
-            begin
-              while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(ch)) do
-              begin
-                L1.Add(PopChar(P1));
-              end;
+          case ch of
+            '(':
               PushChar(P1, ch);
-            end;
+            ')':
+              begin
+                while (not PilhaCharVazia(P1)) and (P1.dado[P1.topo] <> '(') do
+                begin
+                  L1.Add(PopChar(P1));
+                end;
+                if (not PilhaCharVazia(P1)) then
+                  PopChar(P1); // Remover '(' da pilha
+              end;
+
+            '+', '-', '*', '/', '^', '~', 'y':
+              begin
+                while (not PilhaCharVazia(P1)) and (Precedence(P1.dado[P1.topo]) >= Precedence(ch)) do
+                begin
+                  L1.Add(PopChar(P1));
+                end;
+                PushChar(P1, ch);
+              end;
           end;
+        end;
       end;
-    end;
-    Inc(i);
+      Inc(i);
     end;
 
     if tempNum <> '' then
@@ -289,7 +288,8 @@ begin
     if tempOp <> '' then
     begin
       L1.Add(tempOp);  // Adiciona a última operação acumulada, se houver
-      end;
+    end;
+
     while (not PilhaCharVazia(P1)) do
     begin
       L1.Add(PopChar(P1));
@@ -300,6 +300,7 @@ begin
     L1.Free;
   end;
 end;
+
 
 
 
@@ -523,7 +524,7 @@ begin
     //  raise Exception.Create('Erro: Pilha vazia ao tentar aplicar operador binário.');
     //end;
     end
-    else if ehOperacaoEspecial(token) then
+    else if ehOperacaoEsp(token) then
     begin
       if i + 1 < Length(tokens) then
       begin
