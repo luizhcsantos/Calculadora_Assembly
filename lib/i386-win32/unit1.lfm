@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 76
+  Left = 1149
   Height = 444
-  Top = 143
+  Top = 227
   Width = 693
   Caption = 'Form1'
   ClientHeight = 444
@@ -287,13 +287,14 @@ object Form1: TForm1
     Caption = 'Radianos'
     TabOrder = 33
   end
-  object CheckBox1: TCheckBox
+  object chkInversa: TCheckBox
     Left = 28
     Height = 24
     Top = 112
-    Width = 40
-    Caption = 'Inv'
+    Width = 67
+    Caption = 'Inversa'
     TabOrder = 34
+    OnChange = chkInversaChange
   end
   object Button32: TButton
     Left = 440

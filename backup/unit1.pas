@@ -39,14 +39,14 @@ type
     Button16: TButton;
     Button17: TButton; // botão de '='
     Button18: TButton;
-    Button19: TButton;
+    btnTan: TButton;
     Button2: TButton;
-    Button20: TButton;
+    btnCos: TButton;
     Button21: TButton;
     Button22: TButton;
     Button23: TButton;
     Button24: TButton;
-    Button25: TButton;
+    btnSin: TButton;
     Button26: TButton;
     Button27: TButton;
     Button28: TButton;
@@ -63,7 +63,7 @@ type
     Button7: TButton;
     Button8: TButton;
     Button9: TButton;
-    CheckBox1: TCheckBox;
+    chkInversa: TCheckBox;
     Edit1: TEdit;
     Edit2: TEdit;
     Label1: TLabel;
@@ -73,6 +73,7 @@ type
     procedure Button11Click(Sender: TObject);
     procedure Button26Click(Sender: TObject);
     procedure Button32Click(Sender: TObject);
+    procedure chkInversaChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ButtonClick(Sender: TObject);
     procedure ButtonEqualsClick(Sender: TObject);
@@ -148,6 +149,11 @@ begin
   Edit1.Text := '';
 end;
 
+procedure TForm1.chkInversaChange(Sender: TObject);
+begin
+
+end;
+
 // Definição da precendência das operações
 function TForm1.Precedence(op: string): integer;
 begin
@@ -155,7 +161,7 @@ begin
     '~': Precedence := 6; // troca de sinal
     'sqrt', 'y': Precedence := 5; // raiz quadrada
     'log', 'lan': Precedence := 5; // log  e log na base e
-    'cos', 'sin', 'tan': Precedence := 5; // cosseno, seno e tangente  
+    'cos', 'sin', 'tan', 'arcsin', 'arccos', 'arctan': Precedence := 5; // cosseno, seno e tangente e as inversas das mesmas
     '^': Precedence := 5; // potência
     '*', '/': Precedence := 4;
     '+', '-': Precedence := 3;
@@ -172,7 +178,7 @@ function TForm1.ehOperacaoEspecial(op: string): Boolean;
     j: Integer;
     operacoesEspeciais: array of string;
   begin
-    operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos', 'tan'];
+    operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos', 'tan', 'arcsin', 'arccos', 'arctan'];
     Result := False;
     for j := Low(operacoesEspeciais) to High(operacoesEspeciais) do
     begin
@@ -307,7 +313,7 @@ var
   isOperacaoEspecial: Boolean;
 begin
   // Lista de operações especiais
-  operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos'];
+  operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos', 'arcsin', 'arccos', 'arctan'];
 
   // Obtém o dígito do botão clicado
   numeroDigitado := (Sender as TButton).Caption;
@@ -315,8 +321,11 @@ begin
   // Verifica se o texto atual do Edit1 é vazio
   if Edit1.Text = '' then
   begin
-    // Se o texto estiver vazio, apenas adiciona o dígito ao Edit1
-    Edit1.Text := numeroDigitado + ' ';
+    if chkInversa.Checked and MatchStr(numeroDigitado, ['sin', 'cos', 'tan']) then
+       Edit1.Text := 'arc' + numeroDigitado + ' '
+    else
+       // Se o texto estiver vazio, apenas adiciona o dígito ao Edit1
+       Edit1.Text := numeroDigitado + ' ';
     Exit;
   end;
 
@@ -330,7 +339,19 @@ begin
   begin
     if numeroDigitado = operacoesEspeciais[i] then
     begin
-      numeroDigitado := operacoesEspeciais[i] + ' ';
+      if chkInversa.Checked then
+      begin
+        if MatchStr(numeroDigitado, ['sin', 'cos', 'tan']) then
+        begin
+           numeroDigitado := 'arc' + operacoesEspeciais[i] + ' ';
+        end
+      end
+
+      else
+      begin
+           numeroDigitado := operacoesEspeciais[i] + ' ';
+      end;
+
       isOperacaoEspecial := True;
       Break;
     end;
@@ -533,9 +554,9 @@ begin
           end
           else if token = 'cos' then
                asm
-                 fld op1
-                 fcos
-                 fstp op1
+                fld op1
+                fcos
+                fstp op1
                end
           else if token = 'sin' then
                asm
@@ -544,6 +565,15 @@ begin
                  fstp op1
                end
           else if token = 'tan' then
+          begin
+           if chkInversa.Checked then
+             asm
+              fld op1
+              fpatan
+              fstp op1
+             end;
+           end
+           else
                asm
                 fld op1
                 fsincos
