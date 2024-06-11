@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 197
+  Left = 519
   Height = 444
-  Top = 187
+  Top = 161
   Width = 693
   Caption = 'Form1'
   ClientHeight = 444
@@ -229,6 +229,7 @@ object Form1: TForm1
     Width = 94
     Caption = 'pi'
     TabOrder = 26
+    OnClick = Button26Click
   end
   object Button27: TButton
     Left = 544
@@ -270,7 +271,7 @@ object Form1: TForm1
     Caption = 'C'
     TabOrder = 31
   end
-  object RadioButton1: TRadioButton
+  object chkGraus: TRadioButton
     Left = 128
     Height = 24
     Top = 112
@@ -278,7 +279,7 @@ object Form1: TForm1
     Caption = 'Graus'
     TabOrder = 32
   end
-  object RadioButton2: TRadioButton
+  object chkRadianos: TRadioButton
     Left = 232
     Height = 24
     Top = 112

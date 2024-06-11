@@ -12,7 +12,7 @@ interface
 
 uses
   Interfaces, Classes, SysUtils, StrUtils, Forms,
-  Controls, Graphics, Dialogs, StdCtrls;
+  Controls, Graphics, Dialogs, StdCtrls, Math;
 
 type
 
@@ -68,9 +68,10 @@ type
     Edit2: TEdit;
     Label1: TLabel;
     Label2: TLabel;
-    RadioButton1: TRadioButton;
-    RadioButton2: TRadioButton;
+    chkGraus: TRadioButton;
+    chkRadianos: TRadioButton;
     procedure Button11Click(Sender: TObject);
+    procedure Button26Click(Sender: TObject);
     procedure Button32Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ButtonClick(Sender: TObject);
@@ -95,8 +96,14 @@ type
     function Precedence(op: string): integer;
     function ehOperador(s: string): Boolean;
     function ehOperacaoEspecial(op: string): Boolean;
-    procedure Troca(var A, B: Double);
 
+    procedure Troca(var A, B: Double);
+    procedure chkGrausClick(Sender: TObject);
+    procedure chkRadianosClick(Sender: TObject);
+    function GrausParaRadianos(graus: Double): Double;
+    function RadianosParaGraus(radianos: Double): Double;
+    procedure AssemblyGrauRadiano(var valor: Double);
+    procedure AssemblyRadianoGrau(var valor: Double);
 
   public
     { Public declarations }
@@ -128,6 +135,11 @@ end;
 procedure TForm1.Button11Click(Sender: TObject);
 begin
 
+end;
+
+procedure TForm1.Button26Click(Sender: TObject);
+begin
+  Edit1.Text := FloatToSTr(Pi);
 end;
 
 // Função para limpar a caixa de texto ao clicar no botão 'C'
@@ -193,6 +205,7 @@ begin
   expressao := StringReplace(expressao, 'x^y', '^', [rfReplaceAll]);
   expressao := StringReplace(expressao, 'x^2', '^2', [rfReplaceAll]);
   expressao := StringReplace(expressao, 'ysqrt', 'y', [rfReplaceAll]);
+  expressao := StringReplace(expressao, 'pi', FloatToStr(Pi), [rfReplaceAll]);
   try
     i := 1;
     while i <= Length(expressao) do
@@ -355,6 +368,8 @@ var
   base: Double;
   x: Double;
   i: integer;
+  expoenteEhInteiro: Boolean;
+  expoente: Integer;
 begin
   IniciarPilhaDouble(pilha);
   tokens := SplitString(expressao, ' ');
@@ -426,7 +441,18 @@ begin
             end
             else if token = '^' then  // x^y
             begin
-               Troca(op2, op1);
+              expoenteEhInteiro := TryStrToInt(FloatTOStr(op2), expoente);
+              if (op1 < 0) and (not expoenteEhInteiro) then
+              begin
+                raise Exception.Create('Erro: não é possível calcular a potência de um número negativo com expoente não inteiro. ');
+                end
+              else if expoenteEhInteiro then
+              begin
+                op1 := Power(op1, expoente);
+                end
+              else
+              begin
+               //Troca(op2, op1);
                asm
                  fld op1
                  fld1
@@ -443,6 +469,7 @@ begin
                  fscale
                  fstp op1
                  end
+              end
             end
 
             else if (token = 'y') or (token = '2')then // x^y = op1^(1/op2)
@@ -484,6 +511,8 @@ begin
         begin
           PushDouble(pilha, op1);
           op1 := PopDouble(pilha);
+          if chkGraus.Checked then
+             op1 := DegToRad(op1);
           if token = 'sqrt' then
           asm
            fld op1
@@ -503,24 +532,34 @@ begin
            fstp op1
           end
           else if token = 'cos' then
-          asm
-           fld op1
-           fcos
-           fstp op1
-          end
+               asm
+                 fld op1
+                 fcos
+                 fstp op1
+               end
           else if token = 'sin' then
-          asm
-           fld op1
-           fsin
-           fstp op1
-          end
+               asm
+                 fld op1
+                 fsin
+                 fstp op1
+               end
           else if token = 'tan' then
-          asm
-           fld op1
-           fptan
-           fstp op1
-          end;
-          PushDouble(pilha, op1);
+               asm
+                fld op1
+                fsincos
+		fdivp st(1), st(0)
+		fstp op1
+               end;
+               //asm
+               //  fld op1
+               //  fptan
+               //  fstp op1
+               //end;
+               // Converter o resultado de volta para graus se checkbox graus estiver marcado
+        // Converter o resultado de volta para graus se checkbox graus estiver marcado
+        if chkGraus.Checked then
+          AssemblyRadianoGrau(op1);
+        PushDouble(pilha, op1);
         end
     else
     begin
@@ -649,6 +688,58 @@ begin
   Temp := A;
   A := B;
   B := Temp;
+end;
+
+function TForm1.GrausParaRadianos(graus: Double): Double;
+begin
+  Result := DegToRad(graus);
+end;
+
+function TForm1.RadianosParaGraus(radianos: Double): Double;
+begin
+  Result := RadToDeg(radianos);
+end;
+
+procedure TForm1.chkGrausClick(Sender: TObject);
+begin
+  if chkGraus.Checked then
+    chkRadianos.Checked := False;
+end;
+
+procedure TForm1.chkRadianosClick(Sender: TObject);
+begin
+  if chkRadianos.Checked then
+    chkGraus.Checked := False;
+end;
+
+procedure TForm1.AssemblyGrauRadiano(var valor: Double);
+var
+  constante: Double;
+begin
+  constante := 180.0;
+  asm
+    fld valor     // Load the value to convert
+    fldpi        // Load pi
+    fmulp st(1), st(0) // Multiply the value by pi
+    fld constante // Load 180
+    fdivp st(1), st(0) // Divide the result by 180
+    fstp valor    // Store the result back to the variable
+  end;
+end;
+
+procedure TForm1.AssemblyRadianoGrau(var valor: Double);
+var
+  constante: Double;
+begin
+  constante := 180.0;
+  asm
+    fld valor     // Load the value to convert
+    fld constante // Load 180
+    fmulp st(1), st(0) // Multiply the value by 180
+    fldpi        // Load pi
+    fdivp st(1), st(0) // Divide the result by pi
+    fstp valor    // Store the result back to the variable
+  end;
 end;
 
 function TForm1.ehLetraOuDigito(c: Char): Boolean;
