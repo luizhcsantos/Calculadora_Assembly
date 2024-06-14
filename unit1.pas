@@ -161,7 +161,7 @@ begin
     '~': Precedence := 6; // troca de sinal
     'fat': Precedence := 5; // fatorial
     'sqrt', 'y': Precedence := 5; // raiz quadrada  e raiz n-ésima
-    'log', 'lan': Precedence := 5; // log  e log na base e
+    'log', 'ln': Precedence := 5; // log  e log na base e
     'cos', 'sin', 'tan', 'arcsin', 'arccos', 'arctan': Precedence := 5; // cosseno, seno e tangente e as inversas das mesmas
     '^': Precedence := 5; // potência
     '*', '/': Precedence := 4;
@@ -179,7 +179,7 @@ function TForm1.ehOperacaoEspecial(op: string): Boolean;
     j: Integer;
     operacoesEspeciais: array of string;
   begin
-    operacoesEspeciais := ['sqrt', 'log', 'fat', 'sin', 'cos', 'tan', 'arcsin', 'arccos', 'arctan'];
+    operacoesEspeciais := ['sqrt', 'log', 'ln', 'fat', 'div', 'sin', 'cos', 'tan', 'arcsin', 'arccos', 'arctan'];
     Result := False;
     for j := Low(operacoesEspeciais) to High(operacoesEspeciais) do
     begin
@@ -212,6 +212,7 @@ begin
   expressao := StringReplace(expressao, 'ysqrt', 'y', [rfReplaceAll]);
   expressao := StringReplace(expressao, 'pi', FloatToStr(Pi), [rfReplaceAll]);
   expressao := StringReplace(expressao, 'n!', 'fat', [rfReplaceAll]);
+  expressao := StringReplace(expressao, '1/x', 'div',[rfReplaceAll]);
 
   try
     i := 1;
@@ -311,7 +312,7 @@ var
   isOperacaoEspecial: Boolean;
 begin
   // Lista de operações especiais
-  operacoesEspeciais := ['sqrt', 'log', 'sin', 'cos', 'arcsin', 'arccos', 'arctan'];
+  operacoesEspeciais := ['sqrt', 'log', 'ln', 'sin', 'cos', 'arcsin', 'arccos', 'arctan'];
 
   // Obtém o dígito do botão clicado
   numeroDigitado := (Sender as TButton).Caption;
@@ -385,6 +386,7 @@ var
   op1, op2: Double;
   foundNil: Boolean;
   base: Double;
+  e: Double;
   x: Double;
   i: integer;
   fat: integer;
@@ -535,6 +537,21 @@ begin
            fyl2x          //[1.0 / log2n * log2x ] // st = st(1).log2(st)
            fstp op1
           end
+          else if token ='ln' then
+          begin
+            e := 2.71828182846;
+            asm
+             finit          //inicializa a pilha
+             fld1           //[ 1.0 ]
+             fld e       //[ n ; 1.0 ] // para fazer 1 * log2n
+             fyl2x          //[ log2n ] // st = st(1).log2(st)
+             fld1           //[ 1.0 ; log2n ]
+             fdiv st, st(1) //[ 1.0 / log2n ]
+             fld op1        //[ x ; 1.0 / log2n ]
+             fyl2x          //[1.0 / log2n * log2x ] // st = st(1).log2(st)
+             fstp op1
+            end;
+          end
           else if token = 'fat' then
           begin
             fat := Round(op1);
@@ -557,6 +574,15 @@ begin
             end;
 
           end
+          else if token = 'div' then
+          asm
+            fld1           // Carrega 1.0 no topo da pilha da FPU
+            fld op1        // Carrega o valor de op1 no topo da pilha da FPU
+            fdiv st(1), st // Divide 1.0 por op1 (st(1) / st(0)), resultado em st(1)
+            fxch
+            fstp op1       // Armazena o resultado de st(1) em op1 e remove st(1) da pilha
+          end
+
           else if token = 'cos' then
           asm
            fld op1
@@ -586,7 +612,6 @@ begin
 	    fdivp st(1), st(0)
 	    fstp op1
            end;
-
 
         // Converter o resultado de volta para graus se checkbox graus estiver marcado
         if chkGraus.Checked then
