@@ -163,7 +163,7 @@ begin
     'sqrt', 'y': Precedence := 5; // raiz quadrada  e raiz n-ésima
     'log', 'ln': Precedence := 5; // log  e log na base e
     'cos', 'sin', 'tan', 'arcsin', 'arccos', 'arctan': Precedence := 5; // cosseno, seno e tangente e as inversas das mesmas
-    '^': Precedence := 5; // potência
+    '^', 'ex': Precedence := 5; // potência e e^x
     '*', '/': Precedence := 4;
     '+', '-': Precedence := 3;
     '<', '>': Precedence := 2; // não há implementação de < ou > na nossa calculadora
@@ -179,7 +179,7 @@ function TForm1.ehOperacaoEspecial(op: string): Boolean;
     j: Integer;
     operacoesEspeciais: array of string;
   begin
-    operacoesEspeciais := ['sqrt', 'log', 'ln', 'fat', 'div', 'sin', 'cos', 'tan', 'arcsin', 'arccos', 'arctan'];
+    operacoesEspeciais := ['sqrt', 'log', 'ln', 'ex', 'fat', 'div', 'sin', 'cos', 'tan', 'arcsin', 'arccos', 'arctan'];
     Result := False;
     for j := Low(operacoesEspeciais) to High(operacoesEspeciais) do
     begin
@@ -213,6 +213,7 @@ begin
   expressao := StringReplace(expressao, 'pi', FloatToStr(Pi), [rfReplaceAll]);
   expressao := StringReplace(expressao, 'n!', 'fat', [rfReplaceAll]);
   expressao := StringReplace(expressao, '1/x', 'div',[rfReplaceAll]);
+  expressao := StringReplace(expressao, 'e^x', 'ex',[rfReplaceAll]);
 
   try
     i := 1;
@@ -312,7 +313,7 @@ var
   isOperacaoEspecial: Boolean;
 begin
   // Lista de operações especiais
-  operacoesEspeciais := ['sqrt', 'log', 'ln', 'sin', 'cos', 'arcsin', 'arccos', 'arctan'];
+  operacoesEspeciais := ['sqrt', 'log', 'ln', 'ex', 'sin', 'cos', 'arcsin', 'arccos', 'arctan'];
 
   // Obtém o dígito do botão clicado
   numeroDigitado := (Sender as TButton).Caption;
@@ -396,6 +397,7 @@ begin
 
   foundNil := False;  
   base := 10;
+  e := 2,718281828459045235360287471352662497757247093;
 
   i := 0;
   while i < Length(tokens) do
@@ -539,7 +541,7 @@ begin
           end
           else if token ='ln' then
           begin
-            e := 2.71828182846;
+
             asm
              finit          //inicializa a pilha
              fld1           //[ 1.0 ]
@@ -552,7 +554,27 @@ begin
              fstp op1
             end;
           end
-          end
+          else if token = 'ex' then
+          begin
+               Troca(op2, op1);
+               asm
+                 fld e
+                 fld1
+                 fld op2
+                 fyl2x
+                 fmul
+                 fld st
+                 frndint
+                 fsub st(1), st
+                 fxch
+                 f2xm1
+                 fld1
+                 fadd
+                 fscale
+                 fstp op1
+                 end
+
+            end
           else if token = 'fat' then
           begin
             fat := Round(op1);
