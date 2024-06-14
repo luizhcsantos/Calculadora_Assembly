@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 1121
+  Left = 1044
   Height = 444
-  Top = 285
+  Top = 308
   Width = 693
   Caption = 'Form1'
   ClientHeight = 444
@@ -270,6 +270,7 @@ object Form1: TForm1
     Width = 94
     Caption = 'C'
     TabOrder = 31
+    OnClick = Button31Click
   end
   object chkGraus: TRadioButton
     Left = 128
@@ -296,14 +297,14 @@ object Form1: TForm1
     TabOrder = 34
     OnChange = chkInversaChange
   end
-  object Button32: TButton
+  object Backspace: TButton
     Left = 440
     Height = 31
     Top = 112
     Width = 94
     Caption = 'Backspace'
     TabOrder = 35
-    OnClick = Button32Click
+    OnClick = BackspaceClick
   end
   object Button33: TButton
     Left = 336

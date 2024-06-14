@@ -54,7 +54,7 @@ type
     Button3: TButton;
     Button30: TButton;
     Button31: TButton; // Botão 'C' para limpar
-    Button32: TButton;
+    Backspace: TButton;
     Button33: TButton; // botão '('
     Button34: TButton; // botão ')'
     Button4: TButton;
@@ -72,7 +72,8 @@ type
     chkRadianos: TRadioButton;
     procedure Button11Click(Sender: TObject);
     procedure Button26Click(Sender: TObject);
-    procedure Button32Click(Sender: TObject);
+    procedure Button31Click(Sender: TObject);
+    procedure BackspaceClick(Sender: TObject);
     procedure chkInversaChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ButtonClick(Sender: TObject);
@@ -143,10 +144,46 @@ begin
   Edit1.Text := FloatToSTr(Pi);
 end;
 
-// Função para limpar a caixa de texto ao clicar no botão 'C'
-procedure TForm1.Button32Click(Sender: TObject);
+procedure TForm1.Button31Click(Sender: TObject);
 begin
-  Edit1.Text := '';
+
+end;
+
+// Função para limpar a caixa de texto ao clicar no botão 'C'
+procedure TForm1.BackspaceClick(Sender: TObject);
+var
+  len: Integer;
+  expressao: string;
+  lastChar: Char;
+  i: Integer;
+begin
+  expressao := Edit1.Text;
+  len := Length(expressao);
+
+  if len > 0 then
+  begin
+    lastChar := expressao[len];
+
+    // Verificar se é uma operação especial
+    if lastChar in ['a'..'z', 'A'..'Z'] then
+    begin
+      i := len;
+      // Retroceder até encontrar o início da operação especial
+      while (i > 0) and (expressao[i] in ['a'..'z', 'A'..'Z']) do
+      begin
+        Dec(i);
+      end;
+      // Remover a operação completa
+      Delete(expressao, i + 1, len - i);
+    end
+    else
+    begin
+      // Remover o último caractere
+      Delete(expressao, len, 1);
+    end;
+
+    expressaoEdit.Text := expressao;
+  end;
 end;
 
 procedure TForm1.chkInversaChange(Sender: TObject);
@@ -417,8 +454,6 @@ begin
 
     else if ehOperador(token) then
     begin
-    //  if (not PilhaDoubleVazia(pilha)) then
-    //  begin
 
 
         if token = '~' then
@@ -556,7 +591,7 @@ begin
           end
           else if token = 'ex' then
           begin
-               Troca(op2, op1);
+               //Troca(op2, op1);
                asm
                  fld op1          // Carrega o valor de x no topo da pilha da FPU
                  fldl2e         // Carrega o logaritmo base 2 de e no topo da pilha da FPU
