@@ -556,22 +556,21 @@ begin
           end
           else if token = 'ex' then
           begin
-               Troca(op2, op1);
+               //Troca(op2, op1);
                asm
-                 fld e
-                 fld1
-                 fld op2
-                 fyl2x
-                 fmul
-                 fld st
-                 frndint
-                 fsub st(1), st
-                 fxch
-                 f2xm1
-                 fld1
-                 fadd
-                 fscale
-                 fstp op1
+                 fld op1          // Carrega o valor de x no topo da pilha da FPU
+                 fldl2e         // Carrega o logaritmo base 2 de e no topo da pilha da FPU
+                 fmul           // Multiplica st(0) (x) por st(1) (log2(e)), resultado em st(0)
+                 fld st         // Copia o valor do topo da pilha (st(0)) para st(0)
+                 frndint        // Arredonda st(0) para o inteiro mais próximo e coloca no topo da pilha
+                 fsub st(1), st // Subtrai o valor arredondado do valor original, resultado em st(1)
+                 fxch           // Troca st(0) e st(1)
+                 f2xm1          // Calcula 2^st(0) - 1, resultado em st(0)
+                 fld1           // Carrega 1.0 no topo da pilha da FPU
+                 fadd           // Adiciona 1.0 a st(0)
+                 fscale         // Calcula 2^st(1) * st(0), resultado em st(0)
+                 fstp st(1)     // Armazena o valor do topo da pilha em st(1) e remove st(1)
+                 fstp op1         // Armazena o resultado em x e remove o valor da pilha
                  end
 
             end
